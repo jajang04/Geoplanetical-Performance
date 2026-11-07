@@ -22,17 +22,17 @@ powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$ErrorActionPreference = 'Stop'; " ^
   "$dir = $env:GEO_MOD_DIR.TrimEnd('\'); " ^
   "$cands = @([IO.Path]::GetFullPath((Join-Path $dir '..\..\..\..\common\Geoplanetical')), 'C:\Program Files (x86)\Steam\steamapps\common\Geoplanetical', 'C:\Program Files\Steam\steamapps\common\Geoplanetical', 'D:\SteamLibrary\steamapps\common\Geoplanetical', 'E:\SteamLibrary\steamapps\common\Geoplanetical', 'F:\SteamLibrary\steamapps\common\Geoplanetical'); " ^
-  "try { $sp = (Get-ItemProperty 'HKCU:\Software\Valve\Steam' -ErrorAction Stop).SteamPath.Replace('/','\'); $cands += (Join-Path $sp 'steamapps\common\Geoplanetical'); $vdf = Join-Path $sp 'steamapps\libraryfolders.vdf'; if (Test-Path $vdf) { Select-String -Path $vdf -Pattern '\"path\"\s+\"([^\"]+)\"' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $cands += (Join-Path ($_.Groups[1].Value -replace '\\\\','\') 'steamapps\common\Geoplanetical') } } } catch {}; " ^
+  "try { $sp = (Get-ItemProperty 'HKCU:\Software\Valve\Steam' -ErrorAction Stop).SteamPath.Replace('/','\'); $cands += (Join-Path $sp 'steamapps\common\Geoplanetical'); $vdf = Join-Path $sp 'steamapps\libraryfolders.vdf'; if (Test-Path $vdf) { Select-String -Path $vdf -Pattern '\x22path\x22\s+\x22([^\x22]+)\x22' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $cands += (Join-Path ($_.Groups[1].Value -replace '\\\\','\') 'steamapps\common\Geoplanetical') } } } catch {}; " ^
   "$gameDir = $cands | Where-Object { $_ -and (Test-Path (Join-Path $_ 'Geoplanetical.exe')) } | Select-Object -First 1; " ^
   "if (-not $gameDir) { Write-Error 'Could not locate Geoplanetical installation directory.'; exit 1 }; " ^
   "Get-Process Geoplanetical -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue; Start-Sleep -Milliseconds 300; " ^
   "$exe = Join-Path $gameDir 'Geoplanetical.exe'; " ^
   "$bytes = [IO.File]::ReadAllBytes($exe); " ^
-  "$sent = [Text.Encoding]::ASCII.GetBytes('dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX'); " ^
-  "$idx = -1; for ($i = 0; $i -le $bytes.Length - $sent.Length; $i++) { if ($bytes[$i] -eq $sent[0]) { $m = $true; for ($j = 1; $j -lt $sent.Length; $j++) { if ($bytes[$i+$j] -ne $sent[$j]) { $m = $false; break } }; if ($m) { $idx = $i; break } } }; " ^
+  "$sent = 'dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX'; " ^
+  "$idx = [Text.Encoding]::GetEncoding(28591).GetString($bytes).IndexOf($sent, [StringComparison]::Ordinal); " ^
   "if ($idx -ge 0) { $rOff = $idx + $sent.Length + 2; if ($bytes[$rOff] -ne 0x31) { $fs = [IO.File]::Open($exe, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::ReadWrite); $fs.Position = $rOff; $fs.WriteByte(0x31); $fs.Close() } }; " ^
-  "$env:GEO_GAME_DIR = $gameDir; $env:ELECTRON_RUN_AS_NODE = '1'; $env:ELECTRON_NO_ASAR = '1'; " ^
-  "& $exe (Join-Path $dir 'patcher.js') uninstall 2>&1 | ForEach-Object { Write-Host $_ }; " ^
+  "$env:GEO_GAME_DIR = $gameDir; $env:ELECTRON_RUN_AS_NODE = '1'; $env:ELECTRON_NO_ASAR = '1'; $ErrorActionPreference = 'Continue'; " ^
+  "& $exe (Join-Path $dir 'patcher.js') uninstall 2>&1 | ForEach-Object { Write-Host $_.ToString() }; " ^
   "Start-Sleep -Milliseconds 200; " ^
   "if ($idx -ge 0) { $fs = [IO.File]::Open($exe, [IO.FileMode]::Open, [IO.FileAccess]::ReadWrite, [IO.FileShare]::ReadWrite); $fs.Position = ($idx + $sent.Length + 2); $fs.WriteByte(0x30); $fs.Position = ($idx + $sent.Length + 6); $fs.WriteByte(0x31); $fs.Close() }"
 
