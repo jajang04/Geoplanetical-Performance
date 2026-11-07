@@ -447,21 +447,7 @@ function transformAppBundleJs(src) {
     '_drawFrame(){this.renderer.render('
   );
 
-  // 6.16 Reduce _buildProvinceFills triangle count by ~85%, add early fragment discard in fillMat, & auto-settle static globe
-  out = replaceOnceRegex(
-    out,
-    '_buildProvinceFills simplification',
-    /_buildProvinceFills\(\)\{let ([A-Za-z0-9_$]+)=performance\.now\(\),([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\*1\.0008,([A-Za-z0-9_$]+)=\.008\*\.008,([A-Za-z0-9_$]+)=Math\.cos\(2\.5\*Math\.PI\/180\),/,
-    (_, vT0, vR, rad, vTol, vCos) => `_buildProvinceFills(){let ${vT0}=performance.now(),${vR}=${rad}*1.0008,${vTol}=__GFM("gfx")?.045*.045:.008*.008,${vCos}=Math.cos((__GFM("gfx")?8:2.5)*Math.PI/180),`,
-    '_buildProvinceFills(){'
-  );
-  out = replaceOnceRegex(
-    out,
-    '_buildProvinceFills subdivision depth',
-    /if\(([A-Za-z0-9_$]+)<8\)\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\*([A-Za-z0-9_$]+)\+/,
-    (_, vDepth, v1, v2, v3) => `if(${vDepth}<(__GFM("gfx")?2:8)){let ${v1}=${v2}*${v3}+`,
-    '_buildProvinceFills(){'
-  );
+  // 6.16 Retain native spherical province tessellation (prevents flat chord sagging/black patches), add fillMat early discard, & auto-settle static globe
   out = replaceOnceRegex(
     out,
     'fillMat early discard',

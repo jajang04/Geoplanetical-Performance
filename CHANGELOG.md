@@ -6,7 +6,9 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 
 ## [v1.5.0] — 2026-11-07
 
-### Added
+### Added & Fixed
+- **Fixed Dark Polygonal Patches (Restored Native Spherical Tessellation)**:
+  - Fixed dark slate patches appearing on large nations (Russia, China, India) caused by over-simplified triangle subdivision in `_buildProvinceFills()`. Restored native spherical depth 8 tessellation so province overlays smoothly hug the globe surface at $1.0008\times R$ with zero Z-clipping or chord sag.
 - **Separated Hotkeys (F10 & F2)**:
   - **`F10`**: Toggles **Fire Graphics** (Flat unlit shader, 2K canvas downscale, CSS compositor blur killer, disabled newsflash video decoding, hidden clouds/satellites) vs. Vanilla Graphics.
   - **`F2`**: Toggles **Turbo Speed 3** (~16 days/sec simulation speed) vs. Normal Speed 3.
