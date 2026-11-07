@@ -17,8 +17,9 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 - **1.6x Faster Monthly Rollover Tick (`45.0s` ➔ `28.5s`, Saving `16.5s` Every Month) & 60 FPS Cooperative Slicing**:
   - **Single-Pass Monthly CGE World Trade (`16,915 ms` ➔ `7,138 ms`, 2.37x Faster)**: Reduced outer CGE calibration passes (`a4o`) from 2 to 1 on monthly rollover, skipped the redundant `"opening"` `UVe` global trade matrix solve before monthly operating settlement in `Bzt` (`operatingSettlement` cut from `7,790 ms` to `5,309 ms`), and capped `supplierSearchExpansion` (`tLt`) to 1 pass (`[lTt]`).
   - **Adaptive Cooperative Frame Slicing (`16ms / 24ms`)**: Dynamically tightens the worker's cooperative slice budget in `xJa` from `48ms / 64ms` down to `16ms / 24ms` whenever UI IPC requests (`VIEW_SUBSCRIBE`, camera/UI updates) are pending in the worker queue, keeping the UI responsive at 60 FPS during month-end calculations.
-- **Fixed Steam Workshop `.bat` Launchers Closing Immediately**:
-  - Replaced `if %ERRORLEVEL% EQU 0 (...) else (...)` blocks in `Install-Mod.bat` and `Uninstall-Mod.bat` with `goto` label branching (`:run_node` / `:run_ps` / `:done`) and safe environment variable passing (`GEO_MOD_DIR`). Fixes the `cmd.exe` syntax crash caused by the closing parenthesis `)` in `C:\Program Files (x86)\Steam\steamapps\workshop\content\4137120\3834097787\`.
+- **Fixed Steam Workshop `.bat` Launchers Closing Immediately or Hanging Without Node.js**:
+  - Replaced `if %ERRORLEVEL% EQU 0 (...) else (...)` blocks in `Install-Mod.bat` and `Uninstall-Mod.bat` with `goto` label branching (`:run_node` / `:run_ps` / `:done`), safe environment variable passing (`GEO_MOD_DIR`), and `\x22` regex escaping. Fixes the `cmd.exe` syntax crash caused by the closing parenthesis `)` in `C:\Program Files (x86)\Steam\steamapps\workshop\content\4137120\3834097787\`.
+  - Replaced the slow byte-by-byte PowerShell `for` loop across the 200 MB `Geoplanetical.exe` binary with native .NET `IndexOf(..., [StringComparison]::Ordinal)` in ISO-8859-1 encoding, reducing the Node-free fuse scan from **5+ minutes down to `222 ms` (`0.22 seconds`)** when standalone Node.js is not installed.
   - Added automatic `libraryfolders.vdf` multi-drive Steam library discovery and cross-folder shared backup synchronization (`%APPDATA%\Geoplanetical\backups\v<ver>`).
 
 ---
