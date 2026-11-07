@@ -9,7 +9,6 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 ### Added & Fixed
 - **Updated Installation Guide for Steam Workshop Subscribers**:
   - Clarified the physical file location for Steam Workshop subscribers (`steamapps/workshop/content/3182430/3834097787/`) vs. the local AppData directory (`%APPDATA%\Geoplanetical\mods\`), resolving confusion where subscribers saw an empty AppData folder when clicking the in-game folder icon.
-  - Added direct GitHub release link alternative for subscribers wanting a 1-click standalone zip.
 
 ---
 
