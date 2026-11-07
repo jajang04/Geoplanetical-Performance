@@ -1098,6 +1098,25 @@ function install() {
     }
     fs.writeSync(fd, Buffer.from(newHeaderStr, 'utf8'), 0, headerSize, 16);
     console.log('[2/4] Updated ASAR SHA-256 block integrity hashes in-place.');
+
+    // Patch electron/simulation-runtime-flags.js to pass 4GB heap to utilityProcess
+    const flagsRel = path.join('electron', 'simulation-runtime-flags.js');
+    const unpackedFlagsPath = path.join(UNPACKED_DIR, flagsRel);
+    if (fs.existsSync(unpackedFlagsPath)) {
+      const flagsBackupFile = path.join(backupDir, 'electron__simulation-runtime-flags.js');
+      const flagsRaw = fs.readFileSync(unpackedFlagsPath, 'utf8');
+      if (!fs.existsSync(flagsBackupFile)) {
+        if (!flagsRaw.includes('--max-old-space-size=4096')) {
+          fs.writeFileSync(flagsBackupFile, flagsRaw, 'utf8');
+        }
+      }
+      mirrorBackupFile(flagsBackupFile);
+      if (!flagsRaw.includes('--max-old-space-size=4096')) {
+        const patchedFlags = flagsRaw.replace(`'--expose-gc']`, `'--expose-gc', '--max-old-space-size=4096']`);
+        fs.writeFileSync(unpackedFlagsPath, patchedFlags, 'utf8');
+        console.log(`  -> Injected --max-old-space-size=4096 into ${flagsRel}`);
+      }
+    }
   } finally {
     fs.closeSync(fd);
   }
@@ -1164,6 +1183,14 @@ function uninstall() {
       } finally {
         if (isUnpacked) fs.closeSync(workerFd);
       }
+    }
+
+    const flagsRel = path.join('electron', 'simulation-runtime-flags.js');
+    const unpackedFlagsPath = path.join(UNPACKED_DIR, flagsRel);
+    const flagsBackupFile = path.join(backupDir, 'electron__simulation-runtime-flags.js');
+    if (fs.existsSync(unpackedFlagsPath) && fs.existsSync(flagsBackupFile)) {
+      fs.writeFileSync(unpackedFlagsPath, fs.readFileSync(flagsBackupFile, 'utf8'), 'utf8');
+      console.log(`  -> Restored original ${flagsRel}`);
     }
 
     const newHeaderStr = JSON.stringify(header);

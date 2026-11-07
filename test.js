@@ -185,4 +185,12 @@ const installedThumbBytes = fs.readFileSync(path.join(LOCAL_MOD_DIR, 'thumb.png'
 const stripped = modImageMeta.stripImageMetadata(installedThumbBytes, '.png');
 assert(stripped.bytes.length > 100, 'stripImageMetadata succeeds on thumb.png');
 console.log('✔ [Test 4] Geoplanetical native validateModManifest() & stripImageMetadata() passed 100%!');
+
+const flagsPath = path.join(path.dirname(ASAR_PATH), 'app.asar.unpacked', 'electron', 'simulation-runtime-flags.js');
+if (fs.existsSync(flagsPath)) {
+  const flagsContent = fs.readFileSync(flagsPath, 'utf8');
+  assert(flagsContent.includes('--max-old-space-size=4096'), 'simulation-runtime-flags.js must include --max-old-space-size=4096');
+  console.log('✔ [Test 5] V8 utilityProcess heap limit (4096MB) verified in simulation-runtime-flags.js');
+}
+
 console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.0 is ready.');
