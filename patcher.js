@@ -242,7 +242,7 @@ function transformAppBundleJs(src) {
     '_initThree and canvas dimensions',
     /var ([A-Za-z0-9_$]+)=8192,([A-Za-z0-9_$]+)=4096,([A-Za-z0-9_$]+)=4096,([A-Za-z0-9_$]+)=2048,([A-Za-z0-9_$]+)=\1\/4096,([A-Za-z0-9_$]+)=1\.5;function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=\{\}\)\{\8\._quality=([A-Za-z0-9_$]+)\[\9\.quality\]\?\9\.quality:"balanced",\8\._renderScale=Math\.max\(\.5,Math\.min\(1,\9\.renderScale\|\|1\)\);let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\(\8,\8\._quality\)<\6;\8\.renderer=new ([A-Za-z0-9_$]+)\(\{antialias:\11,alpha:!0,powerPreference:"high-performance"\}\),\8\.renderer\.setClearColor\(329224,1\),\8\.renderer\.setPixelRatio\(([A-Za-z0-9_$]+)\(\8,\8\._quality\)\),\8\.renderer\.setSize\(window\.innerWidth,window\.innerHeight\),\8\.container\.appendChild\(\8\.renderer\.domElement\),\8\._frameGate=new ([A-Za-z0-9_$]+),\8\._texTier=([A-Za-z0-9_$]+)\[\9\.textures\]\?\9\.textures:"ultra";let ([A-Za-z0-9_$]+)=\16\[\8\._texTier\];\8\._texAniso=Math\.min\(\8\.renderer\.capabilities\.getMaxAnisotropy\(\),\17\.anisotropy\),\8\._textures=new ([A-Za-z0-9_$]+)\(\{maxSize:Math\.min\(\8\.renderer\.capabilities\.maxTextureSize,\17\.maxSize\)/,
     (_, c8k, c4k1, c4k2, c2k, jL, y1e, fnInit, p1, p2, qMap, vAa, fnAy, clsRen, fnBm, clsFg, texMap, vN, clsTex) =>
-      `var __GFCSS=on=>{try{let d=globalThis.document;if(!d)return;let s=d.getElementById("gf-css");on?(!s&&(s=d.createElement("style"),s.id="gf-css",s.textContent="*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}",d.head?.appendChild(s)),s&&(s.disabled=!1)):s&&(s.disabled=!0)}catch{}},__GFM=()=>{if(globalThis.__GEO_FIRE_MOD__!==void 0)return globalThis.__GEO_FIRE_MOD__;let m=globalThis.window?.desktop?.mods?.snapshot?.mods,on=Array.isArray(m)?m.some(x=>x.id==="geoplanetical-performance"&&x.status==="active"):!0;return globalThis.__GEO_FIRE_MOD__=on,__GFCSS(on),on},${c8k}=__GFM()?2048:8192,${c4k1}=__GFM()?1024:4096,${c4k2}=__GFM()?2048:4096,${c2k}=__GFM()?1024:2048,${jL}=${c8k}/4096,${y1e}=1.5;function ${fnInit}(${p1},${p2}={}){let F=__GFM();__GFCSS(F),${p1}._quality=F?"performance":(${qMap}[${p2}.quality]?${p2}.quality:"balanced"),${p1}._renderScale=Math.max(.25,Math.min(1,${p2}.renderScale||(F?.5:1)));let ${vAa}=!F&&${fnAy}(${p1},${p1}._quality)<${y1e};${p1}.renderer=new ${clsRen}({antialias:${vAa},alpha:!F,stencil:!1,precision:F?"mediump":"highp",powerPreference:"high-performance"}),${p1}.renderer.setClearColor(329224,1),${p1}.renderer.setPixelRatio(${fnBm}(${p1},${p1}._quality)),${p1}.renderer.setSize(window.innerWidth,window.innerHeight),${p1}.container.appendChild(${p1}.renderer.domElement),${p1}._frameGate=new ${clsFg},${p1}._texTier=F?"low":(${texMap}[${p2}.textures]?${p2}.textures:"ultra");let ${vN}=${texMap}[${p1}._texTier];${p1}._texAniso=F?1:Math.min(${p1}.renderer.capabilities.getMaxAnisotropy(),${vN}.anisotropy),${p1}._textures=new ${clsTex}({maxSize:Math.min(${p1}.renderer.capabilities.maxTextureSize,F?2048:${vN}.maxSize)`,
+      `var __GFCSS=on=>{try{let d=globalThis.document;if(!d)return;let s=d.getElementById("gf-css");on?(!s&&(s=d.createElement("style"),s.id="gf-css",s.textContent="*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}",d.head?.appendChild(s)),s&&(s.disabled=!1)):s&&(s.disabled=!0)}catch{}},__GFTOAST=m=>{try{let d=globalThis.document;if(!d)return;let t=d.getElementById("gfm-toast");t||(t=d.createElement("div"),t.id="gfm-toast",t.style.cssText="position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:999999;background:rgba(18,22,28,.95);border:1px solid rgba(255,140,0,.7);color:#fff;font-family:sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.6);pointer-events:none;transition:opacity .2s;",d.body?.appendChild(t));t.textContent=m,t.style.opacity="1",clearTimeout(t._tm),t._tm=setTimeout(()=>{t.style.opacity="0"},2e3)}catch{}},__GFM=(k="all")=>{if(globalThis.__GEO_FIRE_MOD__===void 0){let m=globalThis.window?.desktop?.mods?.snapshot?.mods;globalThis.__GEO_FIRE_MOD__=Array.isArray(m)?m.some(x=>x.id==="geoplanetical-performance"&&x.status==="active"):!0,globalThis.__GEO_FIRE_GFX__??=globalThis.__GEO_FIRE_MOD__,globalThis.__GEO_FIRE_TURBO__??=globalThis.__GEO_FIRE_MOD__}let act=globalThis.__GEO_FIRE_MOD__;return k==="gfx"?(act&&globalThis.__GEO_FIRE_GFX__!==!1):k==="turbo"?(act&&globalThis.__GEO_FIRE_TURBO__!==!1):act},${c8k}=__GFM("gfx")?2048:8192,${c4k1}=__GFM("gfx")?1024:4096,${c4k2}=__GFM("gfx")?2048:4096,${c2k}=__GFM("gfx")?1024:2048,${jL}=${c8k}/4096,${y1e}=1.5;function ${fnInit}(${p1},${p2}={}){let F=__GFM("gfx");__GFCSS(F),${p1}._quality=F?"performance":(${qMap}[${p2}.quality]?${p2}.quality:"balanced"),${p1}._renderScale=Math.max(.25,Math.min(1,${p2}.renderScale||(F?.5:1)));let ${vAa}=!F&&${fnAy}(${p1},${p1}._quality)<${y1e};${p1}.renderer=new ${clsRen}({antialias:${vAa},alpha:!F,stencil:!1,precision:F?"mediump":"highp",powerPreference:"high-performance"}),${p1}.renderer.setClearColor(329224,1),${p1}.renderer.setPixelRatio(${fnBm}(${p1},${p1}._quality)),${p1}.renderer.setSize(window.innerWidth,window.innerHeight),${p1}.container.appendChild(${p1}.renderer.domElement),${p1}._frameGate=new ${clsFg},${p1}._texTier=F?"low":(${texMap}[${p2}.textures]?${p2}.textures:"ultra");let ${vN}=${texMap}[${p1}._texTier];${p1}._texAniso=F?1:Math.min(${p1}.renderer.capabilities.getMaxAnisotropy(),${vN}.anisotropy),${p1}._textures=new ${clsTex}({maxSize:Math.min(${p1}.renderer.capabilities.maxTextureSize,F?2048:${vN}.maxSize)`,
     'powerPreference:"high-performance"'
   );
 
@@ -251,7 +251,7 @@ function transformAppBundleJs(src) {
     out,
     'shouldDraw idle gate',
     /this\.staleSeconds>=(\.1)\?\(this\.staleSeconds=0,!0\):!1/,
-    `this.staleSeconds>=(__GFM()?.5:.1)?(this.staleSeconds=0,!0):!1`,
+    `this.staleSeconds>=(__GFM("gfx")?.5:.1)?(this.staleSeconds=0,!0):!1`,
     'this.staleSeconds+='
   );
 
@@ -260,7 +260,7 @@ function transformAppBundleJs(src) {
     out,
     'baseTexture mipmaps',
     /([A-Za-z0-9_$]+)\.baseTexture\.generateMipmaps=!0,\1\.baseTexture\.minFilter=([A-Za-z0-9_$]+),\1\.baseTexture\.magFilter=([A-Za-z0-9_$]+)/,
-    (_, p1, minF, magF) => `${p1}.baseTexture.generateMipmaps=!__GFM(),${p1}.baseTexture.minFilter=__GFM()?${magF}:${minF},${p1}.baseTexture.magFilter=${magF}`,
+    (_, p1, minF, magF) => `${p1}.baseTexture.generateMipmaps=!__GFM("gfx"),${p1}.baseTexture.minFilter=__GFM("gfx")?${magF}:${minF},${p1}.baseTexture.magFilter=${magF}`,
     '.baseTexture.generateMipmaps=!0'
   );
 
@@ -270,7 +270,7 @@ function transformAppBundleJs(src) {
     'pixelRatio helpers',
     /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=window\.devicePixelRatio\|\|1,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\(\)\)\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\[\3\]\|\|\8\.quality,([A-Za-z0-9_$]+)=Math\.min\(\4\/\5,\7\.pixelRatioCap\);return Math\.max\(\.5,Math\.min\(\9\*\(\2\._renderScale\|\|1\),3\)\)\}function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=window\.devicePixelRatio\|\|1,([A-Za-z0-9_$]+)=\6\(\)\)\{return \1\(\11,\12,\13,\14\)\*\14\}/,
     (_, fnAy, p1, p2, vDpr, vZoom, fnZoom, vQual, qMap, vR, fnBm, p1b, p2b, vDpr2, vZoom2) =>
-      `function ${fnAy}(${p1},${p2},${vDpr}=window.devicePixelRatio||1,${vZoom}=${fnZoom}()){if(__GFM())return Math.max(.25,Math.min(${p1}._renderScale||.5,1));let ${vQual}=${qMap}[${p2}]||${qMap}.quality,${vR}=Math.min(${vDpr}/${vZoom},${vQual}.pixelRatioCap);return Math.max(.25,Math.min(${vR}*(${p1}._renderScale||1),3))}function ${fnBm}(${p1b},${p2b},${vDpr2}=window.devicePixelRatio||1,${vZoom2}=${fnZoom}()){return __GFM()?${fnAy}(${p1b},${p2b},1,1):${fnAy}(${p1b},${p2b},${vDpr2},${vZoom2})*${vZoom2}}`,
+      `function ${fnAy}(${p1},${p2},${vDpr}=window.devicePixelRatio||1,${vZoom}=${fnZoom}()){if(__GFM("gfx"))return Math.max(.25,Math.min(${p1}._renderScale||.5,1));let ${vQual}=${qMap}[${p2}]||${qMap}.quality,${vR}=Math.min(${vDpr}/${vZoom},${vQual}.pixelRatioCap);return Math.max(.25,Math.min(${vR}*(${p1}._renderScale||1),3))}function ${fnBm}(${p1b},${p2b},${vDpr2}=window.devicePixelRatio||1,${vZoom2}=${fnZoom}()){return __GFM("gfx")?${fnAy}(${p1b},${p2b},1,1):${fnAy}(${p1b},${p2b},${vDpr2},${vZoom2})*${vZoom2}}`,
     '.pixelRatioCap)'
   );
 
@@ -287,7 +287,7 @@ function transformAppBundleJs(src) {
     out,
     'cloudMesh suppression',
     /if\(!([A-Za-z0-9_$]+)\.cloudMesh\)return;/,
-    (_, p1) => `if(!${p1}.cloudMesh)return;if(__GFM()){${p1}.cloudMesh.visible=!1,${p1}.auroraMesh&&(${p1}.auroraMesh.visible=!1);return}`,
+    (_, p1) => `if(!${p1}.cloudMesh)return;if(__GFM("gfx")){${p1}.cloudMesh.visible=!1,${p1}.auroraMesh&&(${p1}.auroraMesh.visible=!1);return}`,
     '.cloudMesh)return;'
   );
 
@@ -296,35 +296,35 @@ function transformAppBundleJs(src) {
     out,
     'skip surface-material-4096 in Fire Mode',
     /,([A-Za-z0-9_$]+)\("terrain\/surface-material-4096\.png",/,
-    (_, fnLoad) => `,__GFM()||${fnLoad}("terrain/surface-material-4096.png",`,
+    (_, fnLoad) => `,__GFM("gfx")||${fnLoad}("terrain/surface-material-4096.png",`,
     '"terrain/surface-material-4096.png"'
   );
   out = replaceOnceRegex(
     out,
     'skip sea-ice 16x PNG assembly in Fire Mode',
     /;\{let ([A-Za-z0-9_$]+)=new Array\(([A-Za-z0-9_$]+)\.length\),([A-Za-z0-9_$]+)=\2\.length;([\s\S]*?)\.src="textures\/"\+\2\[([A-Za-z0-9_$]+)\]\}\}/,
-    (_, vArr, vList, vCnt, body, vIdx) => `;if(!__GFM()){let ${vArr}=new Array(${vList}.length),${vCnt}=${vList}.length;${body}.src="textures/"+${vList}[${vIdx}]}}`,
+    (_, vArr, vList, vCnt, body, vIdx) => `;if(!__GFM("gfx")){let ${vArr}=new Array(${vList}.length),${vCnt}=${vList}.length;${body}.src="textures/"+${vList}[${vIdx}]}}`,
     'grain de banquise'
   );
   out = replaceOnceRegex(
     out,
     'skip earthNormal in Fire Mode',
     /([A-Za-z0-9_$]+)\._textures\.register\("earthNormal",/,
-    (_, p1) => `__GFM()||${p1}._textures.register("earthNormal",`,
+    (_, p1) => `__GFM("gfx")||${p1}._textures.register("earthNormal",`,
     '._textures.register("earthNormal",'
   );
   out = replaceOnceRegex(
     out,
     'disable cryo shader work in Fire Mode',
     /([A-Za-z0-9_$]+)\.globeMat\.uniforms\.uCryoOn\.value=1,/,
-    (_, p1) => `${p1}.globeMat.uniforms.uCryoOn.value=__GFM()?0:1,`,
+    (_, p1) => `${p1}.globeMat.uniforms.uCryoOn.value=__GFM("gfx")?0:1,`,
     '.globeMat.uniforms.uCryoOn.value=1,'
   );
   out = replaceOnceRegex(
     out,
     'skip earthClouds in Fire Mode',
     /,([A-Za-z0-9_$]+)\._textures\.register\("earthClouds",/,
-    (_, p1) => `,__GFM()||${p1}._textures.register("earthClouds",`,
+    (_, p1) => `,__GFM("gfx")||${p1}._textures.register("earthClouds",`,
     '._textures.register("earthClouds",'
   );
 
@@ -333,7 +333,7 @@ function transformAppBundleJs(src) {
     out,
     'visual clock speed lookup',
     /([A-Za-z0-9_$]+)\[Math\.max\(0,Math\.min\(\1\.length-1,Math\.trunc\(Number\(([A-Za-z0-9_$]+)\)\|\|0\)\)\)\]\|\|0;/,
-    (_, arrName, vArg) => `(${vArg}===3&&__GFM()?16:${arrName}[Math.max(0,Math.min(${arrName}.length-1,Math.trunc(Number(${vArg})||0)))]||0);`,
+    (_, arrName, vArg) => `(${vArg}===3&&__GFM("turbo")?16:${arrName}[Math.max(0,Math.min(${arrName}.length-1,Math.trunc(Number(${vArg})||0)))]||0);`,
     '.length-1,Math.trunc(Number('
   );
 
@@ -342,7 +342,7 @@ function transformAppBundleJs(src) {
     out,
     'Globe constructor init chain',
     /this\._initThree\(([A-Za-z0-9_$]+)\),this\._initTextures\(\),this\._initScene\(\),this\._initISS\(\),this\._initOrbitalPollution\(\),this\._buildProvinceFills\(\),this\._initBorderLines\(\),this\._initUnits\(\),this\._loadEarthTextures\(\),this\._loadCityLights\(\),this\._bindEvents\(\)/,
-    (_, arg) => `this._initThree(${arg}),this._initTextures(),this._initScene(),__GFM()||(this._initISS(),this._initOrbitalPollution()),this._buildProvinceFills(),this._initBorderLines(),this._initUnits(),this._loadEarthTextures(),__GFM()?(this.lightsReady=Promise.resolve()):this._loadCityLights(),this._bindEvents()`,
+    (_, arg) => `this._initThree(${arg}),this._initTextures(),this._initScene(),__GFM("gfx")||(this._initISS(),this._initOrbitalPollution()),this._buildProvinceFills(),this._initBorderLines(),this._initUnits(),this._loadEarthTextures(),__GFM("gfx")?(this.lightsReady=Promise.resolve()):this._loadCityLights(),this._bindEvents()`,
     'this._initISS(),this._initOrbitalPollution()'
   );
 
@@ -351,7 +351,7 @@ function transformAppBundleJs(src) {
     out,
     'globeMat uGf uniform',
     /uCryoOn:\{value:0\},/,
-    `uCryoOn:{value:0},uGf:{value:__GFM()?1:0},`,
+    `uCryoOn:{value:0},uGf:{value:__GFM("gfx")?1:0},`,
     'uCryoOn:{value:0},'
   );
   out = replaceOnceRegex(
@@ -387,7 +387,7 @@ function transformAppBundleJs(src) {
     out,
     'Earth sphere geometry',
     /this\.sphere=new ([A-Za-z0-9_$]+)\(new ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+),256,160\),this\.globeMat\)/,
-    (_, clsMesh, clsGeo, rad) => `this.sphere=new ${clsMesh}(new ${clsGeo}(${rad},__GFM()?80:256,__GFM()?48:160),this.globeMat)`,
+    (_, clsMesh, clsGeo, rad) => `this.sphere=new ${clsMesh}(new ${clsGeo}(${rad},__GFM("gfx")?80:256,__GFM("gfx")?48:160),this.globeMat)`,
     ',256,160),this.globeMat)'
   );
 
@@ -396,7 +396,7 @@ function transformAppBundleJs(src) {
     out,
     '_initScene end',
     /this\._initMoon\(\),this\._initApollo\(\),this\._initVolcano\(\),this\._resetHurricanes\(\),this\._initSky\(\),this\._updateSun\(0\)/,
-    `this._initMoon(),this._initApollo(),this._initVolcano(),this._resetHurricanes(),__GFM()?(this.cloudMesh&&(this.cloudMesh.visible=!1),this.auroraMesh&&(this.auroraMesh.visible=!1),this.atmosphereMesh&&(this.atmosphereMesh.visible=!1),this.atmosphereExtinctionMesh&&(this.atmosphereExtinctionMesh.visible=!1)):this._initSky(),this._updateSun(0)`,
+    `this._initMoon(),this._initApollo(),this._initVolcano(),this._resetHurricanes(),__GFM("gfx")?(this.cloudMesh&&(this.cloudMesh.visible=!1),this.auroraMesh&&(this.auroraMesh.visible=!1),this.atmosphereMesh&&(this.atmosphereMesh.visible=!1),this.atmosphereExtinctionMesh&&(this.atmosphereExtinctionMesh.visible=!1)):this._initSky(),this._updateSun(0)`,
     'this._initSky(),this._updateSun(0)'
   );
 
@@ -405,7 +405,7 @@ function transformAppBundleJs(src) {
     out,
     '_loadMoonTexture',
     /_loadMoonTexture\(\)\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\[this\._moonDetail\];this\._textures\.register\("moonColor",([A-Za-z0-9_$]+)=>\{this\.moonMat\.uniforms\.moonTex\.value=\3,this\.moonMat\.uniforms\.uHasTex\.value=1,this\.renderer\.initTexture\(\3\)\},\1\.colorPx\),this\._textures\.register\("moonNormal",([A-Za-z0-9_$]+)=>\{this\.moonMat\.uniforms\.normalTex\.value=\4,this\.moonMat\.uniforms\.uHasNormal\.value=1,this\.renderer\.initTexture\(\4\)\},\1\.normalPx\)\}/,
-    (_, vA, tbl, vCb1, vCb2) => `_loadMoonTexture(){let ${vA}=${tbl}[this._moonDetail];this._textures.register("moonColor",${vCb1}=>{this.moonMat.uniforms.moonTex.value=${vCb1},this.moonMat.uniforms.uHasTex.value=1,this.renderer.initTexture(${vCb1})},__GFM()?2048:${vA}.colorPx),__GFM()||this._textures.register("moonNormal",${vCb2}=>{this.moonMat.uniforms.normalTex.value=${vCb2},this.moonMat.uniforms.uHasNormal.value=1,this.renderer.initTexture(${vCb2})},${vA}.normalPx)}`,
+    (_, vA, tbl, vCb1, vCb2) => `_loadMoonTexture(){let ${vA}=${tbl}[this._moonDetail];this._textures.register("moonColor",${vCb1}=>{this.moonMat.uniforms.moonTex.value=${vCb1},this.moonMat.uniforms.uHasTex.value=1,this.renderer.initTexture(${vCb1})},__GFM("gfx")?2048:${vA}.colorPx),__GFM("gfx")||this._textures.register("moonNormal",${vCb2}=>{this.moonMat.uniforms.normalTex.value=${vCb2},this.moonMat.uniforms.uHasNormal.value=1,this.renderer.initTexture(${vCb2})},${vA}.normalPx)}`,
     '_loadMoonTexture(){'
   );
 
@@ -414,14 +414,14 @@ function transformAppBundleJs(src) {
     out,
     'Throttle effects in update()',
     /this\._updateStrikes\(([A-Za-z0-9_$]+)\),this\._updateVolcano\(\1\),this\._updateUnits\(\1\),this\._tickDamage\(\),this\._updateHighlights\(\1\),this\._updateDataFade\(\1\),/,
-    (_, vDt) => `((!__GFM()||(this._gfFxT=(this._gfFxT||0)+${vDt})>=.065)&&(this._gfFxT=0,this._updateStrikes(${vDt}),this._updateVolcano(${vDt}),this._updateUnits(${vDt}),this._tickDamage())),this._updateHighlights(${vDt}),this._updateDataFade(${vDt}),`,
+    (_, vDt) => `((!__GFM("gfx")||(this._gfFxT=(this._gfFxT||0)+${vDt})>=.065)&&(this._gfFxT=0,this._updateStrikes(${vDt}),this._updateVolcano(${vDt}),this._updateUnits(${vDt}),this._tickDamage())),this._updateHighlights(${vDt}),this._updateDataFade(${vDt}),`,
     'this._updateStrikes('
   );
   out = replaceOnceRegex(
     out,
     'Keep atmosphereMesh hidden in update()',
     /let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)<\.999;if\(this\.atmosphereMesh&&\(this\.atmosphereMesh\.visible=\1\),this\.atmosphereExtinctionMesh&&\(this\.atmosphereExtinctionMesh\.visible=\1\),/,
-    (_, vVis, vStrat) => `let ${vVis}=!__GFM()&&${vStrat}<.999;if(this.atmosphereMesh&&(this.atmosphereMesh.visible=${vVis}),this.atmosphereExtinctionMesh&&(this.atmosphereExtinctionMesh.visible=${vVis}),`,
+    (_, vVis, vStrat) => `let ${vVis}=!__GFM("gfx")&&${vStrat}<.999;if(this.atmosphereMesh&&(this.atmosphereMesh.visible=${vVis}),this.atmosphereExtinctionMesh&&(this.atmosphereExtinctionMesh.visible=${vVis}),`,
     '<.999;if(this.atmosphereMesh'
   );
 
@@ -431,7 +431,7 @@ function transformAppBundleJs(src) {
     'DOM markers projection in update()',
     /this\._updateOceanLabels\?\.\(\),this\._updateNationLabels\(([A-Za-z0-9_$]+)\),this\._updateCapitalLabels\(\1\),this\._updateBaseMarkers\(\),this\._updateFormationMarkers\(\),this\._updateFrontLabels\(\),this\._updateWarMapMarks\(\),this\._updatePlantMarkers\(\),this\._updateTransportMarkers\(\),this\._updateTransportFlow\(\),this\._updateConstructionMarkers\(\),this\._updateFieldMarkers\(\),this\.updateWarTargets\?\.\(\),this\._updateWarCandidates\?\.\(\),this\._updateDeterrence\?\.\(\),this\._updateAirDamagePopups\?\.\(\),this\._updateSpaceSites\?\.\(([A-Za-z0-9_$]+)\)/,
     (_, vZoom, vDt) =>
-      `((()=>{if(!__GFM())return!0;let E=this.camera.matrixWorld.elements,k=` +
+      `((()=>{if(!__GFM("gfx"))return!0;let E=this.camera.matrixWorld.elements,k=` +
       `E[0].toFixed(4)+"|"+E[5].toFixed(4)+"|"+E[10].toFixed(4)+"|"+E[12].toFixed(3)+"|"+E[13].toFixed(3)+"|"+E[14].toFixed(3)+"|"+${vZoom}.toFixed(3)+"|"+(this.activeBody||"earth")+"|"+(this._energyMode?1:0)+(this._militaryMode?1:0)+(this._basesMode?1:0)+(this._forageMode?1:0)+(this._transportMode?1:0),` +
       `T=performance.now();return k!==this._gfCamKey&&T-(this._gfDomAt||0)>=36?(this._gfCamKey=k,this._gfDomAt=T,!0):T-(this._gfDomAt||0)>=300?(this._gfCamKey=k,this._gfDomAt=T,!0):!1})())&&(` +
       `this._updateOceanLabels?.(),this._updateNationLabels(${vZoom}),this._updateCapitalLabels(${vZoom}),this._updateBaseMarkers(),this._updateFormationMarkers(),this._updateFrontLabels(),this._updateWarMapMarks(),this._updatePlantMarkers(),this._updateTransportMarkers(),this._updateTransportFlow(),this._updateConstructionMarkers(),this._updateFieldMarkers(),this.updateWarTargets?.(),this._updateWarCandidates?.(),this._updateDeterrence?.(),this._updateAirDamagePopups?.(),this._updateSpaceSites?.(${vDt}))`,
@@ -443,7 +443,7 @@ function transformAppBundleJs(src) {
     out,
     '_drawFrame passes',
     /_drawFrame\(\)\{this\.renderer\.render\(this\.scene,this\.camera\),this\._renderBorderOverlay\?\.\(\),this\._renderISS\(\),this\._renderOrbitalPollution\(\)\}/,
-    `_drawFrame(){this.renderer.render(this.scene,this.camera),this._renderBorderOverlay?.(),__GFM()||(this._renderISS(),this._renderOrbitalPollution())}`,
+    `_drawFrame(){this.renderer.render(this.scene,this.camera),this._renderBorderOverlay?.(),__GFM("gfx")||(this._renderISS(),this._renderOrbitalPollution())}`,
     '_drawFrame(){this.renderer.render('
   );
 
@@ -452,14 +452,14 @@ function transformAppBundleJs(src) {
     out,
     '_buildProvinceFills simplification',
     /_buildProvinceFills\(\)\{let ([A-Za-z0-9_$]+)=performance\.now\(\),([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\*1\.0008,([A-Za-z0-9_$]+)=\.008\*\.008,([A-Za-z0-9_$]+)=Math\.cos\(2\.5\*Math\.PI\/180\),/,
-    (_, vT0, vR, rad, vTol, vCos) => `_buildProvinceFills(){let ${vT0}=performance.now(),${vR}=${rad}*1.0008,${vTol}=__GFM()?.045*.045:.008*.008,${vCos}=Math.cos((__GFM()?8:2.5)*Math.PI/180),`,
+    (_, vT0, vR, rad, vTol, vCos) => `_buildProvinceFills(){let ${vT0}=performance.now(),${vR}=${rad}*1.0008,${vTol}=__GFM("gfx")?.045*.045:.008*.008,${vCos}=Math.cos((__GFM("gfx")?8:2.5)*Math.PI/180),`,
     '_buildProvinceFills(){'
   );
   out = replaceOnceRegex(
     out,
     '_buildProvinceFills subdivision depth',
     /if\(([A-Za-z0-9_$]+)<8\)\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\*([A-Za-z0-9_$]+)\+/,
-    (_, vDepth, v1, v2, v3) => `if(${vDepth}<(__GFM()?2:8)){let ${v1}=${v2}*${v3}+`,
+    (_, vDepth, v1, v2, v3) => `if(${vDepth}<(__GFM("gfx")?2:8)){let ${v1}=${v2}*${v3}+`,
     '_buildProvinceFills(){'
   );
   out = replaceOnceRegex(
@@ -473,7 +473,7 @@ function transformAppBundleJs(src) {
     out,
     '_mapImageSettled and _refreshFillVis in Fire Mode',
     /_mapImageSettled\(\)\{let ([A-Za-z0-9_$]+)=\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)\)=>Math\.abs\(\3-\2\)<\.002;return this\._dataMix===1&&!this\._spinMult&&!this\._captureViewport&&\(this\._choroMix\|\|0\)===\(this\._choroTarget\|\|0\)&&!this\._choroPrevMix&&\(this\._overlayMix\|\|0\)===\(this\._overlayTarget\|\|0\)&&\1\(this\._hoverAmt\|\|0,this\.hovered\?1:0\)&&!this\._hoverPrevAmt&&\1\(this\._selAmt\|\|0,this\.selectedKey\?1:0\)&&!this\._selPrevAmt\},_refreshFillVis\(\)\{let ([A-Za-z0-9_$]+)=this\.fillMat\.uniforms;this\.fillMesh\.visible=this\._attack\|\|\(this\._strategicMix\|\|0\)>\.004\|{2}\4\.uChoro\.value>\.5\|{2}\(this\._choroMix\|\|0\)>\.004\|{2}\(this\._choroPrevMix\|\|0\)>\.004\|{2}\4\.uHovered\.value>=0\|{2}\4\.uSelected\.value>=0\|{2}\(this\._hoverPrevAmt\|\|0\)>\.004\|{2}\(this\._selPrevAmt\|\|0\)>\.004\}/,
-    (_, fnEq, v1, v2, vU) => `_mapImageSettled(){let ${fnEq}=(${v1},${v2})=>Math.abs(${v2}-${v1})<.002;return(__GFM()||this._dataMix===1&&!this._spinMult)&&!this._captureViewport&&(this._choroMix||0)===(this._choroTarget||0)&&!this._choroPrevMix&&(this._overlayMix||0)===(this._overlayTarget||0)&&${fnEq}(this._hoverAmt||0,this.hovered?1:0)&&!this._hoverPrevAmt&&${fnEq}(this._selAmt||0,this.selectedKey?1:0)&&!this._selPrevAmt},_refreshFillVis(){let ${vU}=this.fillMat.uniforms;this.fillMesh.visible=this._attack||(this._strategicMix||0)>.004||${vU}.uChoro.value>.5||(this._choroMix||0)>.004||(this._choroPrevMix||0)>.004||${vU}.uFrontN.value>0||!__GFM()&&(${vU}.uHovered.value>=0||${vU}.uSelected.value>=0||(this._hoverPrevAmt||0)>.004||(this._selPrevAmt||0)>.004)}`,
+    (_, fnEq, v1, v2, vU) => `_mapImageSettled(){let ${fnEq}=(${v1},${v2})=>Math.abs(${v2}-${v1})<.002;return(__GFM("gfx")||this._dataMix===1&&!this._spinMult)&&!this._captureViewport&&(this._choroMix||0)===(this._choroTarget||0)&&!this._choroPrevMix&&(this._overlayMix||0)===(this._overlayTarget||0)&&${fnEq}(this._hoverAmt||0,this.hovered?1:0)&&!this._hoverPrevAmt&&${fnEq}(this._selAmt||0,this.selectedKey?1:0)&&!this._selPrevAmt},_refreshFillVis(){let ${vU}=this.fillMat.uniforms;this.fillMesh.visible=this._attack||(this._strategicMix||0)>.004||${vU}.uChoro.value>.5||(this._choroMix||0)>.004||(this._choroPrevMix||0)>.004||${vU}.uFrontN.value>0||!__GFM("gfx")&&(${vU}.uHovered.value>=0||${vU}.uSelected.value>=0||(this._hoverPrevAmt||0)>.004||(this._selPrevAmt||0)>.004)}`,
     '_mapImageSettled(){'
   );
 
@@ -482,14 +482,14 @@ function transformAppBundleJs(src) {
     out,
     'disable casingMesh in Fire Mode',
     /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)\)\{\2&&\(\2\.mat\.opacity=\3,\2\.casingMat\.opacity=\4,([A-Za-z0-9_$]+)\(\2,\3>\.001\|\|\4>\.001\)\)\}/,
-    (_, fnCf, p1, p2, vCasing) => `function ${fnCf}(${p1},${p2},${vCasing}){${p1}&&(${p1}.mat.opacity=${p2},${p1}.casingMat.opacity=__GFM()?0:${vCasing},${p1}.mesh.visible=${p2}>.001,${p1}.casingMesh.visible=!__GFM()&&${vCasing}>.001)}`,
+    (_, fnCf, p1, p2, vCasing) => `function ${fnCf}(${p1},${p2},${vCasing}){${p1}&&(${p1}.mat.opacity=${p2},${p1}.casingMat.opacity=__GFM("gfx")?0:${vCasing},${p1}.mesh.visible=${p2}>.001,${p1}.casingMesh.visible=!__GFM("gfx")&&${vCasing}>.001)}`,
     '.casingMat.opacity='
   );
   out = replaceOnceRegex(
     out,
     '_initBorderLines minDeg simplification',
     /this\.coastLines=([A-Za-z0-9_$]+)\(this,this\.world\.coastlines,\{radius:([A-Za-z0-9_$]+),minDeg:\.018,order:10,color:([A-Za-z0-9_$]+)\.coast,width:\.56,opacity:\.45,casingWidth:1\.35,casingOpacity:\.4\}\),this\.borderLines=\1\(this,this\.world\.borders,\{radius:\2,minDeg:\.012,order:20,color:\3\.nation,width:\.92,opacity:\.72,casingWidth:2\.1,casingOpacity:\.64\}\)/,
-    (_, fnPx, vRad, colTbl) => `this.coastLines=${fnPx}(this,this.world.coastlines,{radius:${vRad},minDeg:__GFM()?.08:.018,order:10,color:${colTbl}.coast,width:.56,opacity:.45,casingWidth:1.35,casingOpacity:.4}),this.borderLines=${fnPx}(this,this.world.borders,{radius:${vRad},minDeg:__GFM()?.04:.012,order:20,color:${colTbl}.nation,width:.92,opacity:.72,casingWidth:2.1,casingOpacity:.64})`,
+    (_, fnPx, vRad, colTbl) => `this.coastLines=${fnPx}(this,this.world.coastlines,{radius:${vRad},minDeg:__GFM("gfx")?.08:.018,order:10,color:${colTbl}.coast,width:.56,opacity:.45,casingWidth:1.35,casingOpacity:.4}),this.borderLines=${fnPx}(this,this.world.borders,{radius:${vRad},minDeg:__GFM("gfx")?.04:.012,order:20,color:${colTbl}.nation,width:.92,opacity:.72,casingWidth:2.1,casingOpacity:.64})`,
     'this.world.coastlines,{radius:'
   );
   out = replaceOnceRegex(
@@ -497,7 +497,7 @@ function transformAppBundleJs(src) {
     '_updateBorderLod coastLines & provAllLines',
     /([A-Za-z0-9_$]+)\(this\.borderLines,Math\.min\(1,([A-Za-z0-9_$]+)\),Math\.min\(1,([A-Za-z0-9_$]+)\)\),\1\(this\.coastLines,Math\.min\(1,([A-Za-z0-9_$]+)\),Math\.min\(1,([A-Za-z0-9_$]+)\)\);let ([A-Za-z0-9_$]+)=this\._transportMode\?0:1,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\*\(1-([A-Za-z0-9_$]+)\)\*\6;if\(\1\(this\._provHiEntry,([A-Za-z0-9_$]+)\.lerp\(\.25,\.34,([A-Za-z0-9_$]+)\)\*\7,\10\.lerp\(\.05,\.24,\11\)\*\7\),this\._provAllLines\)\{let ([A-Za-z0-9_$]+)=this\._militaryMode\?\.37:1,([A-Za-z0-9_$]+)=\10\.lerp\(\.2,\.38,\8\)\*\9\*\6\*\12;this\._provAllLines\.mat\.opacity=\13,this\._provAllLines\.mesh\.visible=\13>\.002/,
     (_, fnCf, bOp, bCas, cOp, cCas, vI, vP, vR, vG, mth, vMapMix, vH, vM) =>
-      `${fnCf}(this.borderLines,Math.min(1,${bOp}),Math.min(1,${bCas})),${fnCf}(this.coastLines,__GFM()?0:Math.min(1,${cOp}),Math.min(1,${cCas}));let ${vI}=this._transportMode?0:1,${vP}=${vR}*(1-${vG})*${vI};if(${fnCf}(this._provHiEntry,${mth}.lerp(.25,.34,${vMapMix})*${vP},${mth}.lerp(.05,.24,${vMapMix})*${vP}),this._provAllLines){let ${vH}=this._militaryMode?.37:1,${vM}=${mth}.lerp(.2,.38,${vR})*${vG}*${vI}*${vH};this._provAllLines.mat.opacity=${vM},this._provAllLines.mesh.visible=(!__GFM()||a>.55)&&${vM}>.002`,
+      `${fnCf}(this.borderLines,Math.min(1,${bOp}),Math.min(1,${bCas})),${fnCf}(this.coastLines,__GFM("gfx")?0:Math.min(1,${cOp}),Math.min(1,${cCas}));let ${vI}=this._transportMode?0:1,${vP}=${vR}*(1-${vG})*${vI};if(${fnCf}(this._provHiEntry,${mth}.lerp(.25,.34,${vMapMix})*${vP},${mth}.lerp(.05,.24,${vMapMix})*${vP}),this._provAllLines){let ${vH}=this._militaryMode?.37:1,${vM}=${mth}.lerp(.2,.38,${vR})*${vG}*${vI}*${vH};this._provAllLines.mat.opacity=${vM},this._provAllLines.mesh.visible=(!__GFM("gfx")||a>.55)&&${vM}>.002`,
     'this._provAllLines.mesh.visible='
   );
 
@@ -506,16 +506,16 @@ function transformAppBundleJs(src) {
     out,
     'Nation label resolution 72',
     /var ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\*1\.0016,([A-Za-z0-9_$]+)=72,([A-Za-z0-9_$]+)=1\.55,/,
-    (_, vMq, vGe, vOm, vNm) => `var ${vMq}=${vGe}*1.0016,${vOm}=__GFM()?36:72,${vNm}=1.55,`,
+    (_, vMq, vGe, vOm, vNm) => `var ${vMq}=${vGe}*1.0016,${vOm}=__GFM("gfx")?36:72,${vNm}=1.55,`,
     '=1.55,'
   );
 
-  // 6.19 Pass live gf: __GFM() flag and Speed 3 dtSeconds scaling in PULSE request
+  // 6.19 Pass live gf: __GFM("turbo") flag and Speed 3 dtSeconds scaling in PULSE request
   out = replaceOnceRegex(
     out,
     'PULSE request Speed 3 boost + live gf flag',
     /if\(this\.applyStatus\(await this\.request\(([A-Za-z0-9_$]+)\.PULSE,\{dtSeconds:([A-Za-z0-9_$]+)\}\)\),/,
-    (_, enumCmd, vDt) => `if(this.applyStatus(await this.request(${enumCmd}.PULSE,{dtSeconds:__GFM()&&this.status?.speedIdx===3?${vDt}*1.5:${vDt},gf:__GFM()})),`,
+    (_, enumCmd, vDt) => `if(this.applyStatus(await this.request(${enumCmd}.PULSE,{dtSeconds:__GFM("turbo")&&this.status?.speedIdx===3?${vDt}*1.5:${vDt},gf:__GFM("turbo")})),`,
     '.PULSE,{dtSeconds:'
   );
 
@@ -532,7 +532,7 @@ function transformAppBundleJs(src) {
     out,
     'newsflash video selector',
     /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\)\{let ([A-Za-z0-9_$]+)=\2,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)&&\5\[\2\]\|\|\[\];/,
-    (_, fnVid, p1, vTheme, vArr, tbl) => `function ${fnVid}(${p1}){if(__GFM())return null;let ${vTheme}=${p1},${vArr}=${tbl}&&${tbl}[${p1}]||[];`,
+    (_, fnVid, p1, vTheme, vArr, tbl) => `function ${fnVid}(${p1}){if(__GFM("gfx"))return null;let ${vTheme}=${p1},${vArr}=${tbl}&&${tbl}[${p1}]||[];`,
     '"video/news/"'
   );
 
@@ -541,7 +541,7 @@ function transformAppBundleJs(src) {
     out,
     'frame limiter bypass',
     /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\)\{if\(([A-Za-z0-9_$]+)===0\|\|([A-Za-z0-9_$]+)===null\)return \4=\2,!0;let ([A-Za-z0-9_$]+)=Math\.floor\(\(\2-\4\+\.5\)\/\3\);return \5<1\?!1:\(\4\+=\5\*\3,!0\)\}/,
-    (_, fnGate, p1, vCap, vLast, vSteps) => `function ${fnGate}(${p1}){if(__GFM()||${vCap}===0||${vLast}===null)return ${vLast}=${p1},!0;let ${vSteps}=Math.floor((${p1}-${vLast}+.5)/${vCap});return ${vSteps}<1?!1:(${vLast}+=${vSteps}*${vCap},!0)}`,
+    (_, fnGate, p1, vCap, vLast, vSteps) => `function ${fnGate}(${p1}){if(__GFM("gfx")||${vCap}===0||${vLast}===null)return ${vLast}=${p1},!0;let ${vSteps}=Math.floor((${p1}-${vLast}+.5)/${vCap});return ${vSteps}<1?!1:(${vLast}+=${vSteps}*${vCap},!0)}`,
     '{id:"display-currency"'
   );
 
@@ -555,7 +555,7 @@ function transformAppBundleJs(src) {
     'Speed 3 heavy task throttle with live HUD',
     /\{id:"module",run:\(\)=>([A-Za-z0-9_$]+)\.refreshTabTick\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)\)\},([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\.POLITICS\)\?\{id:"legislation",run:\(\)=>\1\.refreshLawsTick\?\.\(\3\)\}:null,\4\(\5\.PUBLIC_FACILITY_PLANNER\)\?\{id:"facilities",run:\(\)=>\1\.publicFacilityPlannerTick\?\.\(\)\}:null,\4\(\5\.HUD\)\?\{id:"datamap-layers",run:\(\)=>([A-Za-z0-9_$]+)\.syncEpidemicLayers\(\2\.readView\(\5\.HUD\)\?\.epidemicPathogens\|\|\[\]\)\}:null,\3\.world\|\|\4\(\5\.DATAMAP,\5\.DATAMAP_PUBLIC_SERVICES\)\?\{id:"datamap",run:\(\)=>\6\.refresh\(\)\}:null,\{id:"world-markers",run:\(\)=>\{\3\.world&&\(([^}]+)\)\}\}/,
     (_, uiVar, simVar, vDelta, fnHas, viewEnum, dmVar, markerCalls) =>
-      `{id:"module",run:()=>__GFM()&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0?${uiVar}.refreshHUD?.(${simVar}):${uiVar}.refreshTabTick(${simVar},${vDelta})},${fnHas}(${viewEnum}.POLITICS)?{id:"legislation",run:()=>${uiVar}.refreshLawsTick?.(${vDelta})}:null,${fnHas}(${viewEnum}.PUBLIC_FACILITY_PLANNER)?{id:"facilities",run:()=>${uiVar}.publicFacilityPlannerTick?.()}:null,${fnHas}(${viewEnum}.HUD)?{id:"datamap-layers",run:()=>${dmVar}.syncEpidemicLayers(${simVar}.readView(${viewEnum}.HUD)?.epidemicPathogens||[])}:null,${vDelta}.world||${fnHas}(${viewEnum}.DATAMAP,${viewEnum}.DATAMAP_PUBLIC_SERVICES)?{id:"datamap",run:()=>{(__GFM()&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0)||${dmVar}.refresh()}}:null,{id:"world-markers",run:()=>{${vDelta}.world&&!(__GFM()&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0)&&(${markerCalls})}}`,
+      `{id:"module",run:()=>__GFM("turbo")&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0?${uiVar}.refreshHUD?.(${simVar}):${uiVar}.refreshTabTick(${simVar},${vDelta})},${fnHas}(${viewEnum}.POLITICS)?{id:"legislation",run:()=>${uiVar}.refreshLawsTick?.(${vDelta})}:null,${fnHas}(${viewEnum}.PUBLIC_FACILITY_PLANNER)?{id:"facilities",run:()=>${uiVar}.publicFacilityPlannerTick?.()}:null,${fnHas}(${viewEnum}.HUD)?{id:"datamap-layers",run:()=>${dmVar}.syncEpidemicLayers(${simVar}.readView(${viewEnum}.HUD)?.epidemicPathogens||[])}:null,${vDelta}.world||${fnHas}(${viewEnum}.DATAMAP,${viewEnum}.DATAMAP_PUBLIC_SERVICES)?{id:"datamap",run:()=>{(__GFM("turbo")&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0)||${dmVar}.refresh()}}:null,{id:"world-markers",run:()=>{${vDelta}.world&&!(__GFM("turbo")&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0)&&(${markerCalls})}}`,
     '{id:"module",run:()=>'
   );
 
@@ -564,21 +564,21 @@ function transformAppBundleJs(src) {
     'every-day date update and Speed 3 world rebuild throttle',
     /function ([A-Za-z0-9_$]+)\(\)\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\.consumeViewDelta\?\3\.consumeViewDelta\(\):null;if\(\2\)\{let ([A-Za-z0-9_$]+)=\3\.campaignOutcome,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\._campaignOutcome;\4&&\(\5\?\.schema!==\4\.schema\|\|\5\?\.status!==\4\.status\|\|\5\?\.reasonId!==\4\.reasonId\|\|\5\?\.day!==\4\.day\|\|\5\?\.countryKey!==\4\.countryKey\)&&\6\.setCampaignOutcome\(\4\),([A-Za-z0-9_$]+)\(\2\),([A-Za-z0-9_$]+)\?\.applyWorld\(\),([A-Za-z0-9_$]+)\(\)\}([A-Za-z0-9_$]+)\(\)\}/,
     (_, fnHna, vDelta, simVar, vNewOut, vOut, uiVar, fnMerge, worldVar, fnKoa, fnJme) =>
-      `function ${fnHna}(){let ${vDelta}=${simVar}.consumeViewDelta?${simVar}.consumeViewDelta():null,F=__GFM()&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0;if(${simVar}&&${simVar}.day!==globalThis.__gfDay){globalThis.__gfDay=${simVar}.day;let d=document.getElementById("hud-date"),s=${fnDateFmt}(new Date(Date.UTC(2026,0,1)+${simVar}.day*864e5));d&&d._dh!==s&&(d._dh=s,d.innerHTML=s)}if(${vDelta}){let ${vNewOut}=${simVar}.campaignOutcome,${vOut}=${uiVar}._campaignOutcome;${vNewOut}&&(${vOut}?.schema!==${vNewOut}.schema||${vOut}?.status!==${vNewOut}.status||${vOut}?.reasonId!==${vNewOut}.reasonId||${vOut}?.day!==${vNewOut}.day||${vOut}?.countryKey!==${vNewOut}.countryKey)&&${uiVar}.setCampaignOutcome(${vNewOut}),${fnMerge}(${vDelta}),F||${worldVar}?.applyWorld(),${fnKoa}()}${fnJme}()}`,
+      `function ${fnHna}(){let ${vDelta}=${simVar}.consumeViewDelta?${simVar}.consumeViewDelta():null,F=__GFM("turbo")&&${simVar}?.speedIdx===3&&(${simVar}.day%3)!==0;if(${simVar}&&${simVar}.day!==globalThis.__gfDay){globalThis.__gfDay=${simVar}.day;let d=document.getElementById("hud-date"),s=${fnDateFmt}(new Date(Date.UTC(2026,0,1)+${simVar}.day*864e5));d&&d._dh!==s&&(d._dh=s,d.innerHTML=s)}if(${vDelta}){let ${vNewOut}=${simVar}.campaignOutcome,${vOut}=${uiVar}._campaignOutcome;${vNewOut}&&(${vOut}?.schema!==${vNewOut}.schema||${vOut}?.status!==${vNewOut}.status||${vOut}?.reasonId!==${vNewOut}.reasonId||${vOut}?.day!==${vNewOut}.day||${vOut}?.countryKey!==${vNewOut}.countryKey)&&${uiVar}.setCampaignOutcome(${vNewOut}),${fnMerge}(${vDelta}),F||${worldVar}?.applyWorld(),${fnKoa}()}${fnJme}()}`,
     '.consumeViewDelta()'
   );
 
-  // 6.22 Upgrade #fps HUD with FIRE status [F10], Turbo Speed 3 badge, frame-time (ms), and JS Heap MB
+  // 6.22 Upgrade #fps HUD with FIRE status [F10], Turbo Speed 3 badge [F2], frame-time (ms), and JS Heap MB
   out = replaceOnceRegex(
     out,
     'FPS counter HUD',
     /([A-Za-z0-9_$]+)&&\(([A-Za-z0-9_$]+)\+\+,([A-Za-z0-9_$]+)-([A-Za-z0-9_$]+)>=500&&\(([A-Za-z0-9_$]+)\.textContent=Math\.round\(\2\*1e3\/\(\3-\4\)\)\+" FPS",\2=0,\4=\3\)\),([A-Za-z0-9_$]+)&&\(([A-Za-z0-9_$]+)\(\),([A-Za-z0-9_$]+)\.update\(([A-Za-z0-9_$]+)\)/,
     (_, vShowFps, vFrames, vNow, vLastT, vEl, vActive, fnHna, simVar, vDt) =>
-      `${vShowFps}&&(${vFrames}++,${vNow}-${vLastT}>=500&&(()=>{let fps=Math.round(${vFrames}*1e3/(${vNow}-${vLastT})),ms=(${vFrames}>0?(${vNow}-${vLastT})/${vFrames}:0).toFixed(1),mb=performance.memory?Math.round(performance.memory.usedJSHeapSize/1048576):0,sp=__GFM()&&${simVar}?.speedIdx===3?" ⚡TURBO":"";${vEl}.textContent=(__GFM()?"🔥 FIRE [F10]"+sp+" · ":"VANILLA [F10] · ")+fps+" FPS ("+ms+" ms)"+(mb?" · "+mb+" MB":""),${vFrames}=0,${vLastT}=${vNow}})()),${vActive}&&(${fnHna}(),${simVar}.update(${vDt})`,
+      `${vShowFps}&&(${vFrames}++,${vNow}-${vLastT}>=500&&(()=>{let fps=Math.round(${vFrames}*1e3/(${vNow}-${vLastT})),ms=(${vFrames}>0?(${vNow}-${vLastT})/${vFrames}:0).toFixed(1),mb=performance.memory?Math.round(performance.memory.usedJSHeapSize/1048576):0,gfx=__GFM("gfx")?"🔥 FIRE [F10]":"VANILLA [F10]",turbo=__GFM("turbo")?" · ⚡TURBO [F2]":" · NORMAL [F2]";${vEl}.textContent=gfx+turbo+" · "+fps+" FPS ("+ms+" ms)"+(mb?" · "+mb+" MB":""),${vFrames}=0,${vLastT}=${vNow}})()),${vActive}&&(${fnHna}(),${simVar}.update(${vDt})`,
     '+" FPS",'
   );
 
-  // 6.23 Capture fpsCap & showFps setter function names and wire F10 live toggle + #set-render-scale slider down to 25%
+  // 6.23 Capture fpsCap & showFps setter function names, wire F10 & F2 hotkeys + toast, & slider down to 25%
   const bootIdx = out.indexOf('.setOrbitalPollutionVisible(');
   const bootSettingsMatch = bootIdx !== -1 && out.slice(bootIdx - 400, bootIdx + 200).match(/([A-Za-z0-9_$]+)\.setQuality\(([A-Za-z0-9_$]+)\.quality\),\1\.setRenderScale\(\2\.renderScale\),([A-Za-z0-9_$]+)\(\2\.fpsCap\),\1\.setCameraSensitivity\(\2\.camRotate,\2\.camZoom\),([A-Za-z0-9_$]+)\(\),\1\.setClouds\(\2\.clouds!==!1\),\1\.setNuclearSoot\(\2\.nuclearSoot!==!1\),\1\.setOrbitalPollutionVisible\(\2\.orbitalSatellites!==!1\),([A-Za-z0-9_$]+)\(\2\.fps\)/);
   if (!bootSettingsMatch) throw new Error('Could not locate boot settings initialization');
@@ -586,11 +586,21 @@ function transformAppBundleJs(src) {
 
   out = replaceOnceRegex(
     out,
-    'set-render-scale slider and F10 hotkey',
+    'set-render-scale slider and F10/F2 hotkeys',
     /([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\("set-render-scale"\),\{min:50,max:100,step:10,value:Math\.round\(\(([A-Za-z0-9_$]+)\.renderScale\|\|1\)\*100\),fmt:([A-Za-z0-9_$]+)=>([A-Za-z0-9_$]+)\(\4\)\},([A-Za-z0-9_$]+)=>\{\3\.renderScale=\6\/100,([A-Za-z0-9_$]+)\.setRenderScale\(\3\.renderScale\)\},\(\)=>([A-Za-z0-9_$]+)\(\)\)/,
     (_, fnSlider, fnById, cVar, vFmtArg, fnFmt, vCbArg, gVar, fnSave) =>
-      `(()=>{if(__GFM()){__GFCSS(!0),${fnFpsCap}(0),${gVar}.setQuality("performance"),${gVar}.setRenderScale(Math.min(${cVar}.renderScale||.5,.5)),${gVar}.setClouds(!1),${gVar}.setNuclearSoot(!1),${gVar}.setOrbitalPollutionVisible(!1),${fnShowFps}(!0)}else __GFCSS(!1);window.addEventListener("keydown",e=>{if(e.key==="F10"){e.preventDefault();let on=!__GFM();globalThis.__GEO_FIRE_MOD__=on,__GFCSS(on),${fnFpsCap}(on?0:${cVar}.fpsCap),${gVar}&&(${gVar}.globeMat?.uniforms?.uGf&&(${gVar}.globeMat.uniforms.uGf.value=on?1:0),${gVar}.setQuality(on?"performance":${cVar}.quality),${gVar}.setRenderScale(on?Math.min(${cVar}.renderScale||.5,.5):${cVar}.renderScale||1),${gVar}.setClouds(!on&&${cVar}.clouds!==!1),${gVar}.setAurora(!on),${gVar}._gfCamKey="",${gVar}._updateBorderLod?.(),${gVar}._frameGate?.invalidate()),${fnShowFps}(!0)}})})(),${fnSlider}(${fnById}("set-render-scale"),{min:25,max:100,step:5,value:Math.round((${cVar}.renderScale||1)*100),fmt:${vFmtArg}=>${fnFmt}(${vFmtArg})},${vCbArg}=>{${cVar}.renderScale=${vCbArg}/100,${gVar}.setRenderScale(${cVar}.renderScale)},()=>${fnSave}())`,
+      `(()=>{if(__GFM("gfx")){__GFCSS(!0),${fnFpsCap}(0),${gVar}.setQuality("performance"),${gVar}.setRenderScale(Math.min(${cVar}.renderScale||.5,.5)),${gVar}.setClouds(!1),${gVar}.setNuclearSoot(!1),${gVar}.setOrbitalPollutionVisible(!1),${fnShowFps}(!0)}else __GFCSS(!1);window.addEventListener("keydown",e=>{if(e.key==="F10"){e.preventDefault();let on=!__GFM("gfx");globalThis.__GEO_FIRE_GFX__=on,__GFCSS(on),${fnFpsCap}(on?0:${cVar}.fpsCap),${gVar}&&(${gVar}.globeMat?.uniforms?.uGf&&(${gVar}.globeMat.uniforms.uGf.value=on?1:0),${gVar}.setQuality(on?"performance":${cVar}.quality),${gVar}.setRenderScale(on?Math.min(${cVar}.renderScale||.5,.5):${cVar}.renderScale||1),${gVar}.setClouds(!on&&${cVar}.clouds!==!1),${gVar}.setAurora(!on),${gVar}._gfCamKey="",${gVar}._updateBorderLod?.(),${gVar}._frameGate?.invalidate()),${fnShowFps}(!0),__GFTOAST(on?"🔥 Graphics: FIRE MODE [F10]":"🌿 Graphics: VANILLA [F10]")}else if(e.key==="F2"){e.preventDefault();let on=!__GFM("turbo");globalThis.__GEO_FIRE_TURBO__=on,__GFTOAST(on?"⚡ Turbo Simulation: ENABLED [F2]":"🐢 Turbo Simulation: DISABLED [F2]")}})})(),${fnSlider}(${fnById}("set-render-scale"),{min:25,max:100,step:5,value:Math.round((${cVar}.renderScale||1)*100),fmt:${vFmtArg}=>${fnFmt}(${vFmtArg})},${vCbArg}=>{${cVar}.renderScale=${vCbArg}/100,${gVar}.setRenderScale(${cVar}.renderScale)},()=>${fnSave}())`,
     '"set-render-scale"'
+  );
+
+  // 6.24 Month-End UI Browsing cache adapter on subscribeView
+  out = replaceOnceRegex(
+    out,
+    'subscribeView Month-End UI Browsing cache adapter',
+    /subscribeView\(t,a=\{\},n=!0\)\{return this\.request\(([A-Za-z0-9_$]+)\.VIEW_SUBSCRIBE,\{viewId:t,params:a,active:n\}\)\.then\(([A-Za-z0-9_$]+)=>\{let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\(\2\.snapshot\);return n&&this\.views\.set\(t,\3\),this\.emit\(`view:\$\{t\}`,n\?\3:null\),\3\}\)\}/,
+    (_, enumCmd, vRes, vItem, fnWa) =>
+      `subscribeView(t,a={},n=!0){return this.request(${enumCmd}.VIEW_SUBSCRIBE,{viewId:t,params:a,active:n}).then(${vRes}=>{let ${vItem}=${fnWa}(${vRes}.snapshot)||(n&&${vRes}?.pending?this.views.get(t):null);return n&&${vItem}&&this.views.set(t,${vItem}),this.emit(\`view:\${t}\`,n?${vItem}:null),${vItem}})}`,
+    '.VIEW_SUBSCRIBE,{viewId:t,'
   );
 
   const finalStr = padToExactBytes(out, origBytes, '/*__PAD_BUNDLE__*/', 'renderer/app.bundle.js');
@@ -745,7 +755,7 @@ const TARGET_FILES = [
 function install() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.4.0 — Installer (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.5.0 — Installer (Game v${ver}) ===`);
   console.log('Target Game Directory:', GAME_DIR);
   console.log('Version Backup Folder:', backupDir);
 
@@ -868,7 +878,7 @@ function install() {
 function uninstall() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.4.0 — Uninstaller (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.5.0 — Uninstaller (Game v${ver}) ===`);
   if (!fs.existsSync(backupDir)) {
     console.log(`No backup directory found for v${ver} (${backupDir}) — game is already clean.`);
     return;

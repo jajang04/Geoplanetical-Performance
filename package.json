@@ -1,7 +1,7 @@
 {
   "name": "geoplanetical-performance",
-  "version": "1.4.0",
-  "description": "FPS booster and Turbo Speed 3 mod for Geoplanetical",
+  "version": "1.5.0",
+  "description": "FPS booster, Turbo Speed 3, and Month-End Browsing mod for Geoplanetical",
   "main": "patcher.js",
   "scripts": {
     "install-mod": "node patcher.js install",

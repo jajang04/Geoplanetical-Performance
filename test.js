@@ -21,7 +21,7 @@ const {
 const ver = detectGameVersion();
 const BACKUP_DIR = getBackupDir();
 
-console.log(`=== Running Geoplanetical Fire Performance Mod v1.4.0 Verification Suite (Game v${ver}) ===\n`);
+console.log(`=== Running Geoplanetical Fire Performance Mod v1.5.0 Verification Suite (Game v${ver}) ===\n`);
 
 // Helper to read raw file & header entry from ASAR
 function readFromAsar(relPath) {
@@ -69,8 +69,12 @@ assert.strictEqual(Buffer.byteLength(bundlePatched, 'utf8'), Buffer.byteLength(b
 assert(bundlePatched.includes('__GEO_FIRE_MOD__'), 'app.bundle.js contains Fire Mod runtime');
 assert(bundlePatched.includes('x.id==="geoplanetical-performance"&&x.status==="active"'), 'app.bundle.js gates on status === "active"');
 assert(bundlePatched.includes('if (uGf > 0.5)'), 'app.bundle.js uses non-destructive Dual Globe Shader');
-assert(bundlePatched.includes('window.addEventListener("keydown",e=>{if(e.key==="F10")'), 'app.bundle.js uses F10 toggle shortcut (preserving F9 screenshot)');
-assert(!bundlePatched.includes('window.addEventListener("keydown",e=>{if(e.key==="F9")'), 'app.bundle.js does not hijack F9');
+assert(bundlePatched.includes('e.key==="F10"'), 'app.bundle.js supports F10 Graphics toggle');
+assert(bundlePatched.includes('e.key==="F2"'), 'app.bundle.js supports F2 Turbo toggle');
+assert(!/key===(["'])F11\1[^}]*__GEO_FIRE_TURBO__/.test(bundlePatched), 'app.bundle.js does not bind Turbo to F11 (reserved for Fullscreen)');
+assert(bundlePatched.includes('__GFTOAST'), 'app.bundle.js contains screen toast notifications');
+assert(bundlePatched.includes('subscribeView(t,a={},n=!0)'), 'app.bundle.js contains Month-End UI Browsing cache adapter');
+assert(bundlePatched.includes('r?.pending?this.views.get(t):null'), 'app.bundle.js provides pending cached view snapshot during month-end');
 
 const swOrig = fs.readFileSync(path.join(BACKUP_DIR, 'renderer__simulation-worker.tail.js'), 'utf8');
 const swPatched = transformWorkerTailJs(swOrig);
@@ -153,4 +157,4 @@ const installedThumbBytes = fs.readFileSync(path.join(LOCAL_MOD_DIR, 'thumb.png'
 const stripped = modImageMeta.stripImageMetadata(installedThumbBytes, '.png');
 assert(stripped.bytes.length > 100, 'stripImageMetadata succeeds on thumb.png');
 console.log('✔ [Test 4] Geoplanetical native validateModManifest() & stripImageMetadata() passed 100%!');
-console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.4.0 is ready.');
+console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.5.0 is ready.');
