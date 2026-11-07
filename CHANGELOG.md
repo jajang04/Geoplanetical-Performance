@@ -19,6 +19,9 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
   - Skipped the forced blocking `session-switch` autosave when loading a save file from inside an active match.
 - **Pure Three.js Graphics Boost & Smooth 60 FPS UI**:
   - Retained all lightweight dual globe shaders, CSS blur removal, 2K canvas, disabled clouds/soot/shadows, unlocked FPS cap, and live F10 Graphics toggle.
+  - **CSS Layout & Paint Containment**: Injected `contain: layout paint !important; content-visibility: auto !important;` on `.panel`, `.window`, `.modal`, `.hud-overlay`, and `.table-container` in Fire Mode, isolating panel reflows and stopping Chromium from repainting the entire viewport whenever market or country numbers update.
+  - **Three.js Nation Label Frustum Culling**: Computed bounding spheres on nation ribbon geometry and enabled `frustumCulled = __GFM("gfx")` on all 212 label meshes so Three.js automatically culls off-screen and backside nation labels.
+  - **Background Sparkline Canvas Freeze**: Skipped Canvas 2D clear/stroke routines in `_paintSpark` whenever the sparkline panel is closed.
 - **Fixed Steam Workshop `.bat` Launchers Closing Immediately or Hanging Without Node.js**:
   - Replaced `if (...) else (...)` blocks in `Install-Mod.bat` and `Uninstall-Mod.bat` with `goto` label branching (`:run_node` / `:run_ps` / `:done`) to fix crashes caused by parentheses in `(x86)` paths.
   - Replaced slow PowerShell byte loops with native .NET `IndexOf(..., [StringComparison]::Ordinal)` in ISO-8859-1 encoding, reducing fuse patching time from 5 minutes down to **222 ms** without Node.js.

@@ -268,7 +268,7 @@ function transformAppBundleJs(src) {
     '_initThree and canvas dimensions',
     /var ([A-Za-z0-9_$]+)=8192,([A-Za-z0-9_$]+)=4096,([A-Za-z0-9_$]+)=4096,([A-Za-z0-9_$]+)=2048,([A-Za-z0-9_$]+)=\1\/4096,([A-Za-z0-9_$]+)=1\.5;function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=\{\}\)\{\8\._quality=([A-Za-z0-9_$]+)\[\9\.quality\]\?\9\.quality:"balanced",\8\._renderScale=Math\.max\(\.5,Math\.min\(1,\9\.renderScale\|\|1\)\);let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\(\8,\8\._quality\)<\6;\8\.renderer=new ([A-Za-z0-9_$]+)\(\{antialias:\11,alpha:!0,powerPreference:"high-performance"\}\),\8\.renderer\.setClearColor\(329224,1\),\8\.renderer\.setPixelRatio\(([A-Za-z0-9_$]+)\(\8,\8\._quality\)\),\8\.renderer\.setSize\(window\.innerWidth,window\.innerHeight\),\8\.container\.appendChild\(\8\.renderer\.domElement\),\8\._frameGate=new ([A-Za-z0-9_$]+),\8\._texTier=([A-Za-z0-9_$]+)\[\9\.textures\]\?\9\.textures:"ultra";let ([A-Za-z0-9_$]+)=\16\[\8\._texTier\];\8\._texAniso=Math\.min\(\8\.renderer\.capabilities\.getMaxAnisotropy\(\),\17\.anisotropy\),\8\._textures=new ([A-Za-z0-9_$]+)\(\{maxSize:Math\.min\(\8\.renderer\.capabilities\.maxTextureSize,\17\.maxSize\)/,
     (_, c8k, c4k1, c4k2, c2k, jL, y1e, fnInit, p1, p2, qMap, vAa, fnAy, clsRen, fnBm, clsFg, texMap, vN, clsTex) =>
-      `var __GFCSS=on=>{try{let d=globalThis.document;if(!d)return;let s=d.getElementById("gf-css");on?(!s&&(s=d.createElement("style"),s.id="gf-css",s.textContent="*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}",d.head?.appendChild(s)),s&&(s.disabled=!1)):s&&(s.disabled=!0)}catch{}},__GFTOAST=m=>{try{let d=globalThis.document;if(!d)return;let t=d.getElementById("gfm-toast");t||(t=d.createElement("div"),t.id="gfm-toast",t.style.cssText="position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:999999;background:rgba(18,22,28,.95);border:1px solid rgba(255,140,0,.7);color:#fff;font-family:sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.6);pointer-events:none;transition:opacity .2s;",d.body?.appendChild(t));t.textContent=m,t.style.opacity="1",clearTimeout(t._tm),t._tm=setTimeout(()=>{t.style.opacity="0"},2e3)}catch{}},__GFM=(k="all")=>{if(globalThis.__GEO_FIRE_MOD__===void 0){let m=globalThis.window?.desktop?.mods?.snapshot?.mods;globalThis.__GEO_FIRE_MOD__=Array.isArray(m)?m.some(x=>x.id==="geoplanetical-performance"&&x.status==="active"):!0,globalThis.__GEO_FIRE_GFX__??=globalThis.__GEO_FIRE_MOD__,globalThis.__GEO_FIRE_TURBO__??=globalThis.__GEO_FIRE_MOD__}let act=globalThis.__GEO_FIRE_MOD__;return k==="gfx"?(act&&globalThis.__GEO_FIRE_GFX__!==!1):k==="turbo"?(act&&globalThis.__GEO_FIRE_TURBO__!==!1):act},${c8k}=__GFM("gfx")?2048:8192,${c4k1}=__GFM("gfx")?1024:4096,${c4k2}=__GFM("gfx")?2048:4096,${c2k}=__GFM("gfx")?1024:2048,${jL}=${c8k}/4096,${y1e}=1.5;function ${fnInit}(${p1},${p2}={}){let F=__GFM("gfx");__GFCSS(F),${p1}._quality=F?"performance":(${qMap}[${p2}.quality]?${p2}.quality:"balanced"),${p1}._renderScale=Math.max(.25,Math.min(1,${p2}.renderScale||(F?.5:1)));let ${vAa}=!F&&${fnAy}(${p1},${p1}._quality)<${y1e};${p1}.renderer=new ${clsRen}({antialias:${vAa},alpha:!F,stencil:!1,precision:F?"mediump":"highp",powerPreference:"high-performance"}),${p1}.renderer.setClearColor(329224,1),${p1}.renderer.setPixelRatio(${fnBm}(${p1},${p1}._quality)),${p1}.renderer.setSize(window.innerWidth,window.innerHeight),${p1}.container.appendChild(${p1}.renderer.domElement),${p1}._frameGate=new ${clsFg},${p1}._texTier=F?"low":(${texMap}[${p2}.textures]?${p2}.textures:"ultra");let ${vN}=${texMap}[${p1}._texTier];${p1}._texAniso=F?1:Math.min(${p1}.renderer.capabilities.getMaxAnisotropy(),${vN}.anisotropy),${p1}._textures=new ${clsTex}({maxSize:Math.min(${p1}.renderer.capabilities.maxTextureSize,F?2048:${vN}.maxSize)`,
+      `var __GFCSS=on=>{try{let d=globalThis.document;if(!d)return;let s=d.getElementById("gf-css");on?(!s&&(s=d.createElement("style"),s.id="gf-css",s.textContent="*{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}.panel,.window,.modal,.hud-overlay,[class*='panel-'],[class*='dialog-'],[class*='table-container']{contain:layout paint!important;content-visibility:auto!important}",d.head?.appendChild(s)),s&&(s.disabled=!1)):s&&(s.disabled=!0)}catch{}},__GFTOAST=m=>{try{let d=globalThis.document;if(!d)return;let t=d.getElementById("gfm-toast");t||(t=d.createElement("div"),t.id="gfm-toast",t.style.cssText="position:fixed;top:68px;left:50%;transform:translateX(-50%);z-index:999999;background:rgba(18,22,28,.95);border:1px solid rgba(255,140,0,.7);color:#fff;font-family:sans-serif;font-size:13px;font-weight:700;padding:8px 16px;border-radius:6px;box-shadow:0 4px 16px rgba(0,0,0,.6);pointer-events:none;transition:opacity .2s;",d.body?.appendChild(t));t.textContent=m,t.style.opacity="1",clearTimeout(t._tm),t._tm=setTimeout(()=>{t.style.opacity="0"},2e3)}catch{}},__GFM=(k="all")=>{if(globalThis.__GEO_FIRE_MOD__===void 0){let m=globalThis.window?.desktop?.mods?.snapshot?.mods;globalThis.__GEO_FIRE_MOD__=Array.isArray(m)?m.some(x=>x.id==="geoplanetical-performance"&&x.status==="active"):!0,globalThis.__GEO_FIRE_GFX__??=globalThis.__GEO_FIRE_MOD__,globalThis.__GEO_FIRE_TURBO__??=globalThis.__GEO_FIRE_MOD__}let act=globalThis.__GEO_FIRE_MOD__;return k==="gfx"?(act&&globalThis.__GEO_FIRE_GFX__!==!1):k==="turbo"?(act&&globalThis.__GEO_FIRE_TURBO__!==!1):act},${c8k}=__GFM("gfx")?2048:8192,${c4k1}=__GFM("gfx")?1024:4096,${c4k2}=__GFM("gfx")?2048:4096,${c2k}=__GFM("gfx")?1024:2048,${jL}=${c8k}/4096,${y1e}=1.5;function ${fnInit}(${p1},${p2}={}){let F=__GFM("gfx");__GFCSS(F),${p1}._quality=F?"performance":(${qMap}[${p2}.quality]?${p2}.quality:"balanced"),${p1}._renderScale=Math.max(.25,Math.min(1,${p2}.renderScale||(F?.5:1)));let ${vAa}=!F&&${fnAy}(${p1},${p1}._quality)<${y1e};${p1}.renderer=new ${clsRen}({antialias:${vAa},alpha:!F,stencil:!1,precision:F?"mediump":"highp",powerPreference:"high-performance"}),${p1}.renderer.setClearColor(329224,1),${p1}.renderer.setPixelRatio(${fnBm}(${p1},${p1}._quality)),${p1}.renderer.setSize(window.innerWidth,window.innerHeight),${p1}.container.appendChild(${p1}.renderer.domElement),${p1}._frameGate=new ${clsFg},${p1}._texTier=F?"low":(${texMap}[${p2}.textures]?${p2}.textures:"ultra");let ${vN}=${texMap}[${p1}._texTier];${p1}._texAniso=F?1:Math.min(${p1}.renderer.capabilities.getMaxAnisotropy(),${vN}.anisotropy),${p1}._textures=new ${clsTex}({maxSize:Math.min(${p1}.renderer.capabilities.maxTextureSize,F?2048:${vN}.maxSize)`,
     'powerPreference:"high-performance"'
   );
 
@@ -653,6 +653,34 @@ function transformAppBundleJs(src) {
     (_, vM, clsWe) =>
       `${vM}=await ${clsWe}.prepareNationLabels({loadingScreen:!__GFM()})`,
     '.prepareNationLabels({loadingScreen:!0})'
+  );
+
+  // 6.29 Compute bounding sphere on nation label ribbon geometry
+  out = replaceOnceRegex(
+    out,
+    'compute bounding sphere on nation label ribbon',
+    /let ([A-Za-z0-9_$]+)=new ([A-Za-z0-9_$]+);return \1\.setAttribute\("position",new ([A-Za-z0-9_$]+)\(n,3\)\),\1\.setAttribute\("uv",new \3\(r,2\)\),\1\.setIndex\(new \3\(i,1\)\),\1/,
+    (_, vD, clsKa, clsCa) =>
+      `let ${vD}=new ${clsKa};return ${vD}.setAttribute("position",new ${clsCa}(n,3)),${vD}.setAttribute("uv",new ${clsCa}(r,2)),${vD}.setIndex(new ${clsCa}(i,1)),${vD}.computeBoundingSphere(),${vD}`,
+    '},_nlDropAll(e){'
+  );
+
+  // 6.30 Enable Three.js native frustum culling on nation label meshes in Fire Mode
+  out = replaceOnceRegex(
+    out,
+    'enable frustum culling on nation label meshes in Fire Mode',
+    /([A-Za-z0-9_$]+)\.renderOrder=6,\1\.frustumCulled=!1,this\._nlGroup\.add\(\1\)/,
+    (_, vP) => `${vP}.renderOrder=6,${vP}.frustumCulled=__GFM("gfx"),this._nlGroup.add(${vP})`,
+    'this._nlGroup.add(P)'
+  );
+
+  // 6.31 Skip background sparkline canvas 2D rendering when closed
+  out = replaceOnceRegex(
+    out,
+    'skip background sparkline canvas rendering when closed',
+    /_paintSpark\(\)\{let ([A-Za-z0-9_$]+)=this\.spark;if\(!\1\)return;let ([A-Za-z0-9_$]+)=\1\.getContext\("2d"\),/,
+    (_, vT, vA) => `_paintSpark(){if(!this.isOpen())return;let ${vT}=this.spark;if(!${vT})return;let ${vA}=${vT}.getContext("2d"),`,
+    '_paintSpark(){let t=this.spark;'
   );
 
   const finalStr = padToExactBytes(out, origBytes, '/*__PAD_BUNDLE__*/', 'renderer/app.bundle.js');

@@ -80,6 +80,10 @@ assert(bundlePatched.includes('.BOOT,{...t,gf:__GFM("turbo")},'), 'app.bundle.js
 assert(bundlePatched.includes('__GFM()||await ') && bundlePatched.includes('.request("session-switch")'), 'app.bundle.js skips blocking session-switch autosave on in-game save load');
 assert(bundlePatched.includes('__GFM()||c||await Promise.race([l,'), 'app.bundle.js auto-bypasses 25s intro narrator stall');
 assert(bundlePatched.includes('.prepareNationLabels({loadingScreen:!__GFM()})'), 'app.bundle.js performs non-blocking nation label baking in background');
+assert(bundlePatched.includes("contain:layout paint!important"), 'app.bundle.js enforces CSS layout containment on UI panels');
+assert(bundlePatched.includes(".computeBoundingSphere()"), 'app.bundle.js computes bounding sphere for nation ribbon geometry');
+assert(bundlePatched.includes(".frustumCulled=__GFM(\"gfx\")"), 'app.bundle.js enables native Three.js frustum culling on nation label meshes in Fire Mode');
+assert(bundlePatched.includes("if(!this.isOpen())return;let t=this.spark;"), 'app.bundle.js freezes background sparkline canvas 2D rendering when closed');
 
 const swOrig = fs.readFileSync(path.join(BACKUP_DIR, 'renderer__simulation-worker.tail.js'), 'utf8');
 const swPatched = transformWorkerTailJs(swOrig);
