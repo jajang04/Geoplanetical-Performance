@@ -91,14 +91,14 @@ assert(/[A-Za-z0-9_$]+\._gf&&[A-Za-z0-9_$]+\.speedIdx===3\?16:/.test(swPatched),
 assert(swPatched.includes('cM=') && swPatched.includes('(pW?16:48)') && swPatched.includes('(pW?24:64)'), 'simulation-worker.tail.js uses adaptive 16-24ms / 48-64ms cooperative slice budgets');
 assert(swPatched.includes('prewarmTransport(){return Promise.resolve({status:"idle"})}'), 'simulation-worker.tail.js bypasses 80s boot prewarmTransport');
 assert(swPatched.includes('require("zlib").gunzipSync(e)'), 'simulation-worker.tail.js uses native C++ zlib.gunzipSync for T0 checkpoint');
-assert(swPatched.includes('if(globalThis.__GFW)return sgt.set(e,vYa(e.finance,r))'), 'simulation-worker.tail.js bypasses wYa read-only schema checks on built-in checkpoint');
+assert(/if\(globalThis\.__GFW\)return (a&&[A-Za-z0-9_$]+\.add\(e\),)?[A-Za-z0-9_$]+\.set\(e,[A-Za-z0-9_$]+\(e\.finance,r\)\)/.test(swPatched), 'simulation-worker.tail.js bypasses wYa read-only schema checks on built-in checkpoint');
 assert(swPatched.includes('if(globalThis.__GFW)return F(a);'), 'simulation-worker.tail.js fast-paths $2e finance double-clone and ledger audits on boot and save load');
 assert(swPatched.includes('checkpointPayload:globalThis.__GFW?null:t'), 'simulation-worker.tail.js frees 700MB checkpointPayload early during HYa');
-assert(swPatched.includes('globalThis.__GFW||kYa(e,a.checkpointPayload)'), 'simulation-worker.tail.js skips 5.1s kYa deep-diff during mgt');
+assert(/!globalThis\.__GFW&&([A-Za-z0-9_$]+\(a\.checkpointPayload\)&&)?[A-Za-z0-9_$]+\(e,a\.checkpointPayload\)/.test(swPatched), 'simulation-worker.tail.js skips 5.1s kYa deep-diff during mgt');
 assert(swPatched.includes('e.compression==="gzip"?z.gunzipSync(e.bytes):z.inflateSync(e.bytes)'), 'simulation-worker.tail.js uses native C++ zlib for .gsav decompression in pir');
-assert(swPatched.includes('e._gf?1:2,kd.SETTLEMENT'), 'simulation-worker.tail.js uses 1 outer CGE pass on monthly ticks');
+assert(/e\._gf\?1:2,[A-Za-z0-9_$]+\.SETTLEMENT/.test(swPatched), 'simulation-worker.tail.js uses 1 outer CGE pass on monthly ticks');
 assert(swPatched.includes('if(i&&!e._gf||d){'), 'simulation-worker.tail.js skips redundant opening UVe pass on monthly settlement');
-assert(swPatched.includes('for(let c of globalThis.__GFW?[lTt]:[lTt,1/0])'), 'simulation-worker.tail.js caps supplierSearchExpansion to 1 pass');
+assert(/for\(let [A-Za-z0-9_$]+ of globalThis\.__GFW\?\[[A-Za-z0-9_$]+\]:\[[A-Za-z0-9_$]+,(1\/0|[A-Za-z0-9_$]+)\]\)/.test(swPatched), 'simulation-worker.tail.js caps supplierSearchExpansion to 1 pass');
 
 for (const batFile of ['Install-Mod.bat', 'Uninstall-Mod.bat']) {
   const batText = fs.readFileSync(path.join(__dirname, batFile), 'utf8');
@@ -172,10 +172,14 @@ const modManifest = loadAsarModule('electron/mods/mod-manifest.js', {
 });
 const modImageMeta = loadAsarModule('electron/mods/mod-image-metadata.js');
 
-const installedModJson = JSON.parse(fs.readFileSync(path.join(LOCAL_MOD_DIR, 'mod.json'), 'utf8'));
-const validation = modManifest.validateModManifest(installedModJson);
-assert.strictEqual(validation.ok, true, 'validateModManifest must return ok: true');
-assert.strictEqual(validation.manifest.id, 'geoplanetical-performance');
+for (const modJsonPath of [path.join(__dirname, 'mod-pack', 'mod.json'), path.join(LOCAL_MOD_DIR, 'mod.json')]) {
+  const mj = JSON.parse(fs.readFileSync(modJsonPath, 'utf8'));
+  assert(mj.version.length <= 64, `${modJsonPath} version length (${mj.version.length}) must be <= 64`);
+  assert(mj.description.length <= 2000, `${modJsonPath} description length (${mj.description.length}) must be <= 2000`);
+  const validation = modManifest.validateModManifest(mj);
+  assert.strictEqual(validation.ok, true, `validateModManifest must return ok: true for ${modJsonPath} (got ${JSON.stringify(validation)})`);
+  assert.strictEqual(validation.manifest.id, 'geoplanetical-performance');
+}
 
 const installedThumbBytes = fs.readFileSync(path.join(LOCAL_MOD_DIR, 'thumb.png'));
 const stripped = modImageMeta.stripImageMetadata(installedThumbBytes, '.png');

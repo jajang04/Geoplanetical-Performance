@@ -190,8 +190,8 @@ function replaceOnceRegex(src, label, regex, replacer, anchor = null, minOffset 
   if (anchor) {
     const aIdx = src.indexOf(anchor, minOffset);
     if (aIdx === -1) throw new Error(`Missing anchor "${anchor}" for [${label}]`);
-    const winStart = Math.max(0, aIdx - 1200);
-    const winEnd = Math.min(src.length, aIdx + anchor.length + 1800);
+    const winStart = Math.max(0, aIdx - 1800);
+    const winEnd = Math.min(src.length, aIdx + anchor.length + 2600);
     const slice = src.slice(winStart, winEnd);
     const m = slice.match(regex);
     if (!m) throw new Error(`Missing pattern around anchor "${anchor}" for [${label}]`);
@@ -714,9 +714,9 @@ function transformWorkerTailJs(src) {
   out = replaceOnceRegex(
     out,
     'bypass wYa read-only schema checks on built-in checkpoint',
-    /if\(([A-Za-z0-9_$]+)\.has\(e\)\)return e;([A-Za-z0-9_$]+)\(e\.cgeOpening,new Set\(r\)\),/,
-    (_, setFYa, fnE7e) =>
-      `if(${setFYa}.has(e))return e;if(globalThis.__GFW)return sgt.set(e,vYa(e.finance,r)),${setFYa}.add(e),e;${fnE7e}(e.cgeOpening,new Set(r)),`,
+    /if\(([A-Za-z0-9_$]+)\.has\(e\)\)return e;(a&&([A-Za-z0-9_$]+)\.add\(e\),)?([A-Za-z0-9_$]+)\(e\.cgeOpening,new Set\(r\)\),([\s\S]*?)let i=([A-Za-z0-9_$]+)\(e\.finance,r\);([\s\S]*?)([A-Za-z0-9_$]+)\.set\(e,i\),\1\.add\(e\),e\}/,
+    (_, setFYa, aAdd, setYVa, fnE7e, mid1, fnVYa, mid2, mapXgt) =>
+      `if(${setFYa}.has(e))return e;if(globalThis.__GFW)return ${aAdd || ''}${mapXgt}.set(e,${fnVYa}(e.finance,r)),${setFYa}.add(e),e;${aAdd || ''}${fnE7e}(e.cgeOpening,new Set(r)),${mid1}let i=${fnVYa}(e.finance,r);${mid2}${mapXgt}.set(e,i),${setFYa}.add(e),e}`,
     '(e.cgeOpening,new Set(r))'
   );
 
@@ -741,9 +741,9 @@ function transformWorkerTailJs(src) {
   out = replaceOnceRegex(
     out,
     'bypass kYa 236MB deep-diff in mgt',
-    /if\(!([A-Za-z0-9_$]+)\(p\)\)throw new Error\("economic T0 checkpoint closure proof invalid"\);([A-Za-z0-9_$]+)\(e,a\.checkpointPayload\),/,
-    (_, fn_U, fnKYa) =>
-      `if(!${fn_U}(p))throw new Error("economic T0 checkpoint closure proof invalid");globalThis.__GFW||${fnKYa}(e,a.checkpointPayload),`,
+    /if\(!([A-Za-z0-9_$]+)\(p\)\)throw new Error\("economic T0 checkpoint closure proof invalid"\);([A-Za-z0-9_$]+\(a\.checkpointPayload\)&&)?([A-Za-z0-9_$]+)\(e,a\.checkpointPayload\),/,
+    (_, fn_U, bdePrefix, fnKYa) =>
+      `if(!${fn_U}(p))throw new Error("economic T0 checkpoint closure proof invalid");!globalThis.__GFW&&${bdePrefix || ''}${fnKYa}(e,a.checkpointPayload),`,
     '"economic T0 checkpoint closure proof invalid"'
   );
 
@@ -770,10 +770,10 @@ function transformWorkerTailJs(src) {
   out = replaceOnceRegex(
     out,
     'init e._gf in ggo and skip overwritten society/macro init on restore',
-    /function ([A-Za-z0-9_$]+)\(e,t,a,r=null\)\{let o=a>>>0\|\|([A-Za-z0-9_$]+);e\.world=t,e\.day=0,([\s\S]*?)tWa\(t,e\.countries\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)e\._initFiscal\(o,o\.eco\),([A-Za-z0-9_$]+)\(o\);for\(let o of e\.countries\.values\(\)\)o\.pol&&\(o\.laws0=([A-Za-z0-9_$]+)\(o\.key,\{mood:o\.pol\.mood,regime:o\.pol\.regime,country:o\}\),o\.laws=([A-Za-z0-9_$]+)\(o\.laws0\),([A-Za-z0-9_$]+)\(o,\{anchor:!0\}\),o\.procedures=\[\],o\.lawCooldown=\{\},o\.pol\.procedureSeq=0\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o,e\._participationOf\(o\)\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),e\._setTvaEff\(o\),e\._initIRBrackets\(o,\{restore:!!r\.restore\}\);for\(let o of e\.countries\.values\(\)\)!o\.pol\|\|!o\.pops\|\|\(([A-Za-z0-9_$]+)\(o\.pol,e\._voterBlocs\(o\)\),([A-Za-z0-9_$]+)\(o\.pol\)\)\}\],\["macro",\(\)=>\{([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)o\.pol&&o\.pops&&\17\(o\.pol,e\._voterBlocs\(o\)\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),\24\(e\),\25\(e\)\}\]/,
-    (_, fnGgo, vXYa, midGgo, fnN1a, fnZKe, fnVXt, fnESt, fnMr, fnB5e, fnLWe, fnMUe, fnZOt, fnSXt, fnW7a, fnRB, fnWMe, fnJB, fnS8, fnRWa, fnJ9e, fnCWa, fnEYa, fnDkt, fnG4t, fnQlt, fnVNa, fnZYa, fnB0a) =>
-      `function ${fnGgo}(e,t,a,r=null){let o=a>>>0||${vXYa};e._gf=globalThis.__GFW??!0,e.world=t,e.day=0,${midGgo}tWa(t,e.countries),${fnN1a}(e),${fnZKe}(e);for(let o of e.countries.values())e._initFiscal(o,o.eco),${fnVXt}(o);for(let o of e.countries.values())o.pol&&(o.laws0=${fnESt}(o.key,{mood:o.pol.mood,regime:o.pol.regime,country:o}),o.laws=${fnMr}(o.laws0),${fnB5e}(o,{anchor:!0}),o.procedures=[],o.lawCooldown={},o.pol.procedureSeq=0);for(let o of e.countries.values())${fnLWe}(o),${fnMUe}(o),${fnZOt}(o,e._participationOf(o)),${fnSXt}(o),${fnW7a}(o),!(globalThis.__GFW&&r.restore)&&(${fnRB}(o),${fnWMe}(o)),e._setTvaEff(o),e._initIRBrackets(o,{restore:!!r.restore});if(!(globalThis.__GFW&&r.restore))for(let o of e.countries.values())!o.pol||!o.pops||(${fnJB}(o.pol,e._voterBlocs(o)),${fnS8}(o.pol))}],["macro",()=>{${fnRWa}(e);for(let o of e.countries.values())${fnJ9e}(o);${fnCWa}(e),${fnEYa}(e);if(!(globalThis.__GFW&&r.restore)){for(let o of e.countries.values())o.pol&&o.pops&&${fnJB}(o.pol,e._voterBlocs(o));${fnDkt}(e),${fnG4t}(e),${fnQlt}(e)}${fnVNa}(e),!(globalThis.__GFW&&r.restore)&&${fnZYa}(e),${fnB0a}(e),${fnG4t}(e),!(globalThis.__GFW&&r.restore)&&${fnQlt}(e)}]`,
-    'tWa(t,e.countries),'
+    /function ([A-Za-z0-9_$]+)\(e,t,a,r=null\)\{let o=a>>>0\|\|([A-Za-z0-9_$]+);e\.world=t,e\.day=0,([\s\S]*?)\["society",\(\)=>\{for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\);([A-Za-z0-9_$]+)\(t,e\.countries\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)e\._initFiscal\(o,o\.eco\),([A-Za-z0-9_$]+)\(o\);for\(let o of e\.countries\.values\(\)\)o\.pol&&\(o\.laws0=([A-Za-z0-9_$]+)\(o\.key,\{mood:o\.pol\.mood,regime:o\.pol\.regime,country:o\}\),o\.laws=([A-Za-z0-9_$]+)\(o\.laws0\),([A-Za-z0-9_$]+)\(o,\{anchor:!0\}\),o\.procedures=\[\],o\.lawCooldown=\{\},o\.pol\.procedureSeq=0\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o,e\._participationOf\(o\)\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),e\._setTvaEff\(o\),e\._initIRBrackets\(o,\{restore:!!r\.restore\}\);for\(let o of e\.countries\.values\(\)\)!o\.pol\|\|!o\.pops\|\|\(([A-Za-z0-9_$]+)\(o\.pol,e\._voterBlocs\(o\)\),([A-Za-z0-9_$]+)\(o\.pol\)\)\}\],\["macro",\(\)=>\{([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)o\.pol&&o\.pops&&\20\(o\.pol,e\._voterBlocs\(o\)\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),\27\(e\),\28\(e\)\}\]/,
+    (_, fnGgo, vXYa, midGgo, fnB$t, fnU6, fnTWa, fnN1a, fnZKe, fnVXt, fnESt, fnMr, fnB5e, fnLWe, fnMUe, fnZOt, fnSXt, fnW7a, fnRB, fnWMe, fnJB, fnS8, fnRWa, fnJ9e, fnCWa, fnEYa, fnDkt, fnG4t, fnQlt, fnVNa, fnZYa, fnB0a) =>
+      `function ${fnGgo}(e,t,a,r=null){let o=a>>>0||${vXYa};e._gf=globalThis.__GFW??!0,e.world=t,e.day=0,${midGgo}["society",()=>{for(let o of e.countries.values())${fnB$t}(o),${fnU6}(o);${fnTWa}(t,e.countries),${fnN1a}(e),${fnZKe}(e);for(let o of e.countries.values())e._initFiscal(o,o.eco),${fnVXt}(o);for(let o of e.countries.values())o.pol&&(o.laws0=${fnESt}(o.key,{mood:o.pol.mood,regime:o.pol.regime,country:o}),o.laws=${fnMr}(o.laws0),${fnB5e}(o,{anchor:!0}),o.procedures=[],o.lawCooldown={},o.pol.procedureSeq=0);for(let o of e.countries.values())${fnLWe}(o),${fnMUe}(o),${fnZOt}(o,e._participationOf(o)),${fnSXt}(o),${fnW7a}(o),!(globalThis.__GFW&&r.restore)&&(${fnRB}(o),${fnWMe}(o)),e._setTvaEff(o),e._initIRBrackets(o,{restore:!!r.restore});if(!(globalThis.__GFW&&r.restore))for(let o of e.countries.values())!o.pol||!o.pops||(${fnJB}(o.pol,e._voterBlocs(o)),${fnS8}(o.pol))}],["macro",()=>{${fnRWa}(e);for(let o of e.countries.values())${fnJ9e}(o);${fnCWa}(e),${fnEYa}(e);if(!(globalThis.__GFW&&r.restore)){for(let o of e.countries.values())o.pol&&o.pops&&${fnJB}(o.pol,e._voterBlocs(o));${fnDkt}(e),${fnG4t}(e),${fnQlt}(e)}${fnVNa}(e),!(globalThis.__GFW&&r.restore)&&${fnZYa}(e),${fnB0a}(e),${fnG4t}(e),!(globalThis.__GFW&&r.restore)&&${fnQlt}(e)}]`,
+    '["society",()=>{'
   );
 
   // 7.10 Area 2 (Save Load): Fast-path wc path object allocations, $Xa dry-run, xer YDe walk, v4o m5t walk, and $2e double-clone
@@ -805,9 +805,9 @@ function transformWorkerTailJs(src) {
   out = replaceOnceRegex(
     out,
     'fast-path v4o m5t walk and $2e finance double-clone & audits',
-    /r=null,([A-Za-z0-9_$]+)\(o\);let n;try\{n=([A-Za-z0-9_$]+)\(o\)\}([\s\S]*?)function ([A-Za-z0-9_$]+)\(e,t=\{\}\)\{if\(t\.repairForLoad!==!0\)return ([A-Za-z0-9_$]+)\(e,t\),([A-Za-z0-9_$]+)\(t\.takeOwnership===!0\?e:([A-Za-z0-9_$]+)\(e\),t\);([A-Za-z0-9_$]+)\(e\);let a=t\.takeOwnership===!0\?e:\7\(e\);([\s\S]*?)let r;try\{return ([A-Za-z0-9_$]+)\(a,t\),\6\(a,t\)\}catch\(o\)\{r=o\}/,
-    (_, fnM5t, fnD4o, midV4o, fn$2e, fnV5t, fnD5t, fnGHa, fn$Ha, midRepair, fnF5t) =>
-      `r=null,globalThis.__GFW||${fnM5t}(o);let n;try{n=${fnD4o}(o)}${midV4o}function ${fn$2e}(e,t={}){let F=x=>(J3e(x),AM(x),zU(x),ZJ.set(x,{ok:!0,errors:[]}),V2e.add(x),t.countries&&Oj({finance:x,countries:t.countries}),x);if(globalThis.__GFW&&t.repairForLoad!==!0)return F(e);if(t.repairForLoad!==!0)return ${fnV5t}(e,t),${fnD5t}(t.takeOwnership===!0?e:${fnGHa}(e),t);globalThis.__GFW||${fn$Ha}(e);let a=globalThis.__GFW||t.takeOwnership===!0?e:${fnGHa}(e);${midRepair}if(globalThis.__GFW)return F(a);let r;try{return ${fnF5t}(a,t),${fnD5t}(a,t)}catch(o){r=o}`,
+    /r=null,([A-Za-z0-9_$]+)\(o\);let n;try\{n=([A-Za-z0-9_$]+)\(o\)\}([\s\S]*?)function ([A-Za-z0-9_$]+)\(e,t=\{\}\)\{if\(t\.repairForLoad!==!0\)return ([A-Za-z0-9_$]+)\(e,t\),([A-Za-z0-9_$]+)\(t\.takeOwnership===!0\?e:([A-Za-z0-9_$]+)\(e\),t\);([A-Za-z0-9_$]+)\(e\);let a=t\.takeOwnership===!0\?e:\7\(e\);([\s\S]*?)let r;try\{return ([A-Za-z0-9_$]+)\(a,t\),\6\(a,t\)\}catch\(o\)\{r=o\}([\s\S]*?)try\{([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\)\}catch\(a\)\{[\s\S]*?\}return ([A-Za-z0-9_$]+)\.add\(e\),([A-Za-z0-9_$]+)\.set\(e,\{ok:!0,errors:\[\]\}\),([A-Za-z0-9_$]+)\.add\(e\),e\}([\s\S]*?)t\.countries&&([A-Za-z0-9_$]+)\(\{finance:e,countries:t\.countries\}\)/,
+    (_, fnM5t, fnD4o, midV4o, fn$2e, fnV5t, fnD5t, fnGHa, fn$Ha, midRepair, fnF5t, midCatch, fnMye, fnLM, fnNH, setEDe, mapPX, setHpe, midAgt, fnUj) =>
+      `r=null,globalThis.__GFW||${fnM5t}(o);let n;try{n=${fnD4o}(o)}${midV4o}function ${fn$2e}(e,t={}){let F=x=>(${fnMye}(x),${fnLM}(x),${fnNH}(x),${mapPX}.set(x,{ok:!0,errors:[]}),${setHpe}.add(x),t.countries&&${fnUj}({finance:x,countries:t.countries}),x);if(globalThis.__GFW&&t.repairForLoad!==!0)return F(e);if(t.repairForLoad!==!0)return ${fnV5t}(e,t),${fnD5t}(t.takeOwnership===!0?e:${fnGHa}(e),t);globalThis.__GFW||${fn$Ha}(e);let a=globalThis.__GFW||t.takeOwnership===!0?e:${fnGHa}(e);${midRepair}if(globalThis.__GFW)return F(a);let r;try{return ${fnF5t}(a,t),${fnD5t}(a,t)}catch(o){r=o}${midCatch}try{${fnMye}(e),${fnLM}(e),${fnNH}(e)}catch(a){}return ${setEDe}.add(e),${mapPX}.set(e,{ok:!0,errors:[]}),${setHpe}.add(e),e}${midAgt}t.countries&&${fnUj}({finance:e,countries:t.countries})`,
     'if(t.repairForLoad!==!0)return '
   );
 
@@ -827,41 +827,50 @@ function transformWorkerTailJs(src) {
     /function\*([A-Za-z0-9_$]+)\(e,t=\{\}\)\{let\{periodYears:a\}=([A-Za-z0-9_$]+)\(t\);yield\*([A-Za-z0-9_$]+)\(e,a,2,([A-Za-z0-9_$]+)\.SETTLEMENT,t\)\}/,
     (_, fnA4o, fnYHa, fnBHa, enumKd) =>
       `function*${fnA4o}(e,t={}){let{periodYears:a}=${fnYHa}(t);yield*${fnBHa}(e,a,e._gf?1:2,${enumKd}.SETTLEMENT,t)}`,
-    ',2,kd.SETTLEMENT,t)}'
+    '.SETTLEMENT,t)}'
   );
 
   out = replaceOnceRegex(
     out,
     'skip redundant opening UVe pass in Bzt on monthly settlement when _gf active',
-    /return M\.opening=_e\.diagnostics,_e\.flows\}\}\),E=k,D=null;if\(i\|\|d\)\{/,
-    'return M.opening=_e.diagnostics,_e.flows}}),E=k,D=null;if(i&&!e._gf||d){',
-    'return M.opening=_e.diagnostics,_e.flows}}),E=k,D=null;if(i||d){'
+    /return ([A-Za-z0-9_$]+)\.opening=([A-Za-z0-9_$]+)\.diagnostics,\2\.flows\}\}\),([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=null;if\(i\|\|d\)\{/,
+    (_, vM, vRes, vE, vK, vD) =>
+      `return ${vM}.opening=${vRes}.diagnostics,${vRes}.flows}}),${vE}=${vK},${vD}=null;if(i&&!e._gf||d){`,
+    '.opening='
   );
 
   out = replaceOnceRegex(
     out,
-    'cap supplierSearchExpansion tLt to 1 pass and reclaim aLt._doc slack',
-    /function\*([A-Za-z0-9_$]+)\(\{markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l\}\)\{for\(let c of\[([A-Za-z0-9_$]+),1\/0\]\)([\s\S]*?)var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",schemaVersion:1,/,
-    (_, fnTLt, vLTt, bodyTLt, vALt) =>
-      `function*${fnTLt}({markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l}){for(let c of globalThis.__GFW?[${vLTt}]:[${vLTt},1/0])${bodyTLt}var ${vALt}={_doc:"",schemaVersion:1,`,
+    'cap supplierSearchExpansion tLt to 1 pass',
+    /function\*([A-Za-z0-9_$]+)\(\{markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l(,pool:c=null)?\}\)\{for\(let ([A-Za-z0-9_$]+) of\[([A-Za-z0-9_$]+),(1\/0|[A-Za-z0-9_$]+)\]\)/,
+    (_, fnTLt, poolArg, vLoop, vLTt, vSecond) =>
+      `function*${fnTLt}({markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l${poolArg || ''}}){for(let ${vLoop} of globalThis.__GFW?[${vLTt}]:[${vLTt},${vSecond}])`,
     'supplierSearchExpansion'
   );
 
-  // 7.12 Reclaim unused jka._doc and h4t._doc strings for byte-exact padding slack
+  // 7.12 Reclaim unused _doc strings for byte-exact padding slack (minifier-resilient anchors)
   out = replaceOnceRegex(
     out,
-    'reclaim jka._doc slack',
-    /var jka=\{_doc:"([^"\\]|\\.)*",questions:/,
-    'var jka={_doc:"",questions:',
-    'var jka={_doc:'
+    'reclaim war theatre _doc slack',
+    /var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",theatre:\{reservePctDefault:0/,
+    (_, vF_a) => `var ${vF_a}={_doc:"",theatre:{reservePctDefault:0`,
+    ',theatre:{reservePctDefault:0'
   );
 
   out = replaceOnceRegex(
     out,
-    'reclaim h4t._doc slack',
-    /var h4t=\{_doc:"([^"\\]|\\.)*",sources:/,
-    'var h4t={_doc:"",sources:',
-    'var h4t={_doc:'
+    'reclaim regional questions _doc slack',
+    /var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",questions:\[\{id:"abkhazia"/,
+    (_, vJka) => `var ${vJka}={_doc:"",questions:[{id:"abkhazia"`,
+    ',questions:[{id:"abkhazia"'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'reclaim relative_sector_wages _doc slack',
+    /var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",sources:\[\{id:"relative_sector_wages"/,
+    (_, vH4t) => `var ${vH4t}={_doc:"",sources:[{id:"relative_sector_wages"`,
+    ',sources:[{id:"relative_sector_wages"'
   );
 
   // 7.13 Replace trailing license comment with pad token

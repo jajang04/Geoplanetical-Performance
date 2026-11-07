@@ -7,6 +7,8 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 ## [v1.6.0] — 2026-11-07
 
 ### Added & Fixed
+- **Game Patch v1.1.0 & v1.0.9 Compatibility**:
+  - Updated all worker tail regexes to be 100% minifier-resilient across both **Geoplanetical v1.1.0** (`15.4 MB` unpacked worker) and **v1.0.9** (`19.6 MB` unpacked worker), and enforced strict `<= 2000` character validation on `mod.json` `description` in `test.js`.
 - **5.8x Faster New World Generation (`131s` ➔ `22.6s`)**:
   - **4 GB Worker V8 Heap (`--max-old-space-size=4096`)**: Prevents V8 old-generation GC thrashing and out-of-memory crashes on 8 GB RAM laptops during the ~2.5 GB peak allocation spike of `session.boot` and save deserialization.
   - **Native C++ `zlib.gunzipSync` (`4,555 ms` ➔ `579 ms`)**: Replaced the pure-JS `UZIP` inflate loop (`W5o`) with Node's native C++ `zlib.gunzipSync` for the 700 MB `boot-world-checkpoint.json.gz` payload.
