@@ -637,7 +637,16 @@ function transformWorkerTailJs(src) {
     'async pulse('
   );
 
-  // 7.4 Replace trailing license comment with pad token
+  // 7.4 Bypass ~80s synchronous transport prewarm network graph solver during boot
+  out = replaceOnceRegex(
+    out,
+    'bypass boot prewarmTransport',
+    /prewarmTransport\(\)\{return ([A-Za-z0-9_$]+)\(this,\{scope:"demand",reason:"session-load-prewarm"\}\)\}/,
+    'prewarmTransport(){return Promise.resolve({status:"idle"})}',
+    'reason:"session-load-prewarm"'
+  );
+
+  // 7.5 Replace trailing license comment with pad token
   out = replaceOnceRegex(
     out,
     'worker trailing license comment pad token',

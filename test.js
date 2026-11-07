@@ -81,6 +81,7 @@ const swPatched = transformWorkerTailJs(swOrig);
 assert.strictEqual(Buffer.byteLength(swPatched, 'utf8'), Buffer.byteLength(swOrig, 'utf8'), 'simulation-worker.tail.js byte length exact');
 assert(swPatched.includes('__GEO_FIRE_WORKER__'), 'simulation-worker.tail.js contains Turbo Speed 3 hook');
 assert(/[A-Za-z0-9_$]+\._gf&&[A-Za-z0-9_$]+\.speedIdx===3\?16:/.test(swPatched), 'simulation-worker.tail.js gates 16.0x Speed 3 on live ._gf flag');
+assert(swPatched.includes('prewarmTransport(){return Promise.resolve({status:"idle"})}'), 'simulation-worker.tail.js bypasses 80s boot prewarmTransport');
 console.log('✔ [Test 2] All JS transforms preserve exact byte lengths, pass VM syntax validation, and enforce 100% reversible Active-Mod gating');
 
 // 3. Verify Patched ASAR Integrity Hashes & Fuse Status
