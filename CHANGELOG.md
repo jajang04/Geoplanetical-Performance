@@ -7,24 +7,21 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 ## [v1.6.0] — 2026-11-07
 
 ### Added & Fixed
-- **Game Patch v1.1.0 & v1.0.9 Compatibility**:
-  - Updated all worker tail regexes to be 100% minifier-resilient across both **Geoplanetical v1.1.0** (`15.4 MB` unpacked worker) and **v1.0.9** (`19.6 MB` unpacked worker), and enforced strict `<= 2000` character validation on `mod.json` `description` in `test.js`.
-- **5.8x Faster New World Generation (`131s` ➔ `22.6s`)**:
-  - **4 GB Worker V8 Heap (`--max-old-space-size=4096`)**: Patched `simulation-runtime-flags.js` directly to pass `--max-old-space-size=4096` to Electron's simulation `utilityProcess`, preventing V8 old-generation GC thrashing and Windows pagefile swapping on 8 GB RAM laptops during the ~2.5 GB peak allocation spike of `session.boot` and save deserialization.
-  - **Auto-Bypass 25s Intro Audio Loading Stall**: Patched `c || await Promise.race([l, G0.armSkip(...)])` in `renderer/app.bundle.js` so Fire Mode automatically bypasses the 25-second intro narrator lock without requiring manual mouse clicks or pressing Enter.
-  - **Non-Blocking 3D Atlas Label Baking**: Patched `we.prepareNationLabels({ loadingScreen: !__GFM() })` in `renderer/app.bundle.js` so generating 3D curved ribbon label meshes and textures for all 212 nations runs smoothly in the background via `requestAnimationFrame` instead of freezing the loading screen.
-  - **Native C++ `zlib.gunzipSync` (`4,555 ms` ➔ `579 ms`)**: Replaced the pure-JS `UZIP` inflate loop (`W5o`) with Node's native C++ `zlib.gunzipSync` for the 700 MB `boot-world-checkpoint.json.gz` payload.
-  - **Read-Only Checkpoint Validation & Deep-Diff Bypass (`25,659 ms` ➔ `148 ms`)**: Skipped redundant SHA-256 verification (`G5o`) on the immutable built-in checkpoint, bypassed 25 read-only schema invariant walks in `wYa` while preserving `vYa` finance runtime map hydration, skipped duplicate `Lle` household accounting checks in `_Ya`, freed the 700 MB `checkpointPayload` buffer immediately after `JSON.parse` (`HYa`), and bypassed the 236 MB `kYa` deep-clone certification diff (`mgt`/`ugt`).
-- **3.5x Faster Save File Loading (`46s` ➔ `13.0s`) & 6x Faster Save Snapshots (`28.0s` ➔ `4.7s`)**:
-  - **Instant In-Game Save Load (`15–28s` Saved)**: Skipped the forced blocking `session-switch` autosave in `PPt` when loading a save file from inside an active match in Fire Mode.
-  - **Fast Restore Pipeline (`34.7s` ➔ `5.5s`)**: Replaced pure-JS `UZIP` decompression in `pir` with native C++ `zlib` (`gunzipSync` / `inflateSync`), eliminated millions of temporary `{parent, key}` path object allocations during `MC` recursive save-tree walks, skipped pre-restore `eVa` passes that are immediately overwritten by `Str` (`RB`, `WMe`, `jB`/`S8`, `dkt`, `ZYa`, and duplicate `g4t`/`qlt`), bypassed the redundant `$Xa` dry-run migration clone, and bypassed `GHa` double-cloning and full Day 1–31 financial ledger transaction replay audits (`f5t`/`d5t`/`P5t`/`B9`) inside `$2e` and `IOe`.
-- **1.6x Faster Monthly Rollover Tick (`45.0s` ➔ `28.5s`, Saving `16.5s` Every Month) & 60 FPS Cooperative Slicing**:
-  - **Single-Pass Monthly CGE World Trade (`16,915 ms` ➔ `7,138 ms`, 2.37x Faster)**: Reduced outer CGE calibration passes (`a4o`) from 2 to 1 on monthly rollover, skipped the redundant `"opening"` `UVe` global trade matrix solve before monthly operating settlement in `Bzt` (`operatingSettlement` cut from `7,790 ms` to `5,309 ms`), and capped `supplierSearchExpansion` (`tLt`) to 1 pass (`[lTt]`).
-  - **Adaptive Cooperative Frame Slicing (`16ms / 24ms`)**: Dynamically tightens the worker's cooperative slice budget in `xJa` from `48ms / 64ms` down to `16ms / 24ms` whenever UI IPC requests (`VIEW_SUBSCRIBE`, camera/UI updates) are pending in the worker queue, keeping the UI responsive at 60 FPS during month-end calculations.
+- **Clean Native v1.1.0 Simulation Engine (Zero Conflicts)**:
+  - Eliminated conflicting simulation worker monkey-patches to ensure 100% native stability and full compatibility with the official v1.1.0 engine update (Banking, Stocks, Puppets, regional trade overhaul, and pre-baked economic checkpoint).
+  - Eliminates monthly tick retry stalls, trade divergence loops, and save loading delays caused by outdated v1.0.8/v1.0.9 monkey-patches.
+- **Zero RAM Swapping on 8GB Systems**:
+  - Preserved vanilla V8 memory limits instead of forcing 4GB heap allocations. Eliminates heavy Windows `pagefile.sys` disk thrashing during session switching and save loading on 8GB RAM laptops.
+- **Fast New World Generation & Loading Screen Bypass**:
+  - **Auto-Bypass 25s Intro Audio Loading Stall**: Patched `renderer/app.bundle.js` so Fire Mode automatically bypasses the 25-second intro narrator lock without requiring mouse clicks or keypresses.
+  - **Non-Blocking 3D Atlas Label Baking**: Nation label baking runs smoothly in the background via `requestAnimationFrame` instead of freezing the loading screen for 212 nations.
+- **Instant In-Game Save Load**:
+  - Skipped the forced blocking `session-switch` autosave when loading a save file from inside an active match.
+- **Pure Three.js Graphics Boost & Smooth 60 FPS UI**:
+  - Retained all lightweight dual globe shaders, CSS blur removal, 2K canvas, disabled clouds/soot/shadows, unlocked FPS cap, and live F10 Graphics toggle.
 - **Fixed Steam Workshop `.bat` Launchers Closing Immediately or Hanging Without Node.js**:
-  - Replaced `if %ERRORLEVEL% EQU 0 (...) else (...)` blocks in `Install-Mod.bat` and `Uninstall-Mod.bat` with `goto` label branching (`:run_node` / `:run_ps` / `:done`), safe environment variable passing (`GEO_MOD_DIR`), and `\x22` regex escaping. Fixes the `cmd.exe` syntax crash caused by the closing parenthesis `)` in `C:\Program Files (x86)\Steam\steamapps\workshop\content\4137120\3834097787\`.
-  - Replaced the slow byte-by-byte PowerShell `for` loop across the 200 MB `Geoplanetical.exe` binary with native .NET `IndexOf(..., [StringComparison]::Ordinal)` in ISO-8859-1 encoding, reducing the Node-free fuse scan from **5+ minutes down to `222 ms` (`0.22 seconds`)** when standalone Node.js is not installed.
-  - Added automatic `libraryfolders.vdf` multi-drive Steam library discovery and cross-folder shared backup synchronization (`%APPDATA%\Geoplanetical\backups\v<ver>`).
+  - Replaced `if (...) else (...)` blocks in `Install-Mod.bat` and `Uninstall-Mod.bat` with `goto` label branching (`:run_node` / `:run_ps` / `:done`) to fix crashes caused by parentheses in `(x86)` paths.
+  - Replaced slow PowerShell byte loops with native .NET `IndexOf(..., [StringComparison]::Ordinal)` in ISO-8859-1 encoding, reducing fuse patching time from 5 minutes down to **222 ms** without Node.js.
 
 ---
 

@@ -57,7 +57,7 @@ const mainOrig = fs.readFileSync(path.join(BACKUP_DIR, 'electron__main.js'), 'ut
 const mainPatched = transformMainJs(mainOrig);
 assert.strictEqual(Buffer.byteLength(mainPatched, 'utf8'), Buffer.byteLength(mainOrig, 'utf8'), 'main.js byte length exact');
 assert(mainPatched.includes('__GEO_FIRE_MAIN__'), 'main.js contains Fire Mod hook');
-assert(mainPatched.includes("process.env.NODE_OPTIONS = '--max-old-space-size=4096'"), 'main.js sets 4GB V8 heap limit for simulation worker via NODE_OPTIONS');
+assert(mainPatched.includes("app.commandLine.appendSwitch('disable-gpu-vsync')"), 'main.js sets GPU performance flags');
 
 const wkOrig = fs.readFileSync(path.join(BACKUP_DIR, 'electron__mods__mod-workshop.js'), 'utf8');
 const wkPatched = transformWorkshopJs(wkOrig);
@@ -78,6 +78,8 @@ assert(bundlePatched.includes('subscribeView(t,a={},n=!0)'), 'app.bundle.js cont
 assert(bundlePatched.includes('r?.pending?this.views.get(t):null'), 'app.bundle.js provides pending cached view snapshot during month-end');
 assert(bundlePatched.includes('.BOOT,{...t,gf:__GFM("turbo")},'), 'app.bundle.js passes gf flag during session.boot');
 assert(bundlePatched.includes('__GFM()||await ') && bundlePatched.includes('.request("session-switch")'), 'app.bundle.js skips blocking session-switch autosave on in-game save load');
+assert(bundlePatched.includes('__GFM()||c||await Promise.race([l,'), 'app.bundle.js auto-bypasses 25s intro narrator stall');
+assert(bundlePatched.includes('.prepareNationLabels({loadingScreen:!__GFM()})'), 'app.bundle.js performs non-blocking nation label baking in background');
 
 const swOrig = fs.readFileSync(path.join(BACKUP_DIR, 'renderer__simulation-worker.tail.js'), 'utf8');
 const swPatched = transformWorkerTailJs(swOrig);
@@ -86,19 +88,7 @@ if (fs.existsSync(unpackedWorker)) {
   new vm.Script(fs.readFileSync(unpackedWorker, 'utf8'), { filename: 'renderer/simulation-worker.bundle.js' });
 }
 assert.strictEqual(Buffer.byteLength(swPatched, 'utf8'), Buffer.byteLength(swOrig, 'utf8'), 'simulation-worker.tail.js byte length exact');
-assert(swPatched.includes('__GEO_FIRE_WORKER__'), 'simulation-worker.tail.js contains Turbo Speed 3 hook');
-assert(/[A-Za-z0-9_$]+\._gf&&[A-Za-z0-9_$]+\.speedIdx===3\?16:/.test(swPatched), 'simulation-worker.tail.js gates 16.0x Speed 3 on live ._gf flag');
-assert(swPatched.includes('cM=') && swPatched.includes('(pW?16:48)') && swPatched.includes('(pW?24:64)'), 'simulation-worker.tail.js uses adaptive 16-24ms / 48-64ms cooperative slice budgets');
-assert(swPatched.includes('prewarmTransport(){return Promise.resolve({status:"idle"})}'), 'simulation-worker.tail.js bypasses 80s boot prewarmTransport');
-assert(swPatched.includes('require("zlib").gunzipSync(e)'), 'simulation-worker.tail.js uses native C++ zlib.gunzipSync for T0 checkpoint');
-assert(/if\(globalThis\.__GFW\)return (a&&[A-Za-z0-9_$]+\.add\(e\),)?[A-Za-z0-9_$]+\.set\(e,[A-Za-z0-9_$]+\(e\.finance,r\)\)/.test(swPatched), 'simulation-worker.tail.js bypasses wYa read-only schema checks on built-in checkpoint');
-assert(swPatched.includes('if(globalThis.__GFW)return F(a);'), 'simulation-worker.tail.js fast-paths $2e finance double-clone and ledger audits on boot and save load');
-assert(swPatched.includes('checkpointPayload:globalThis.__GFW?null:t'), 'simulation-worker.tail.js frees 700MB checkpointPayload early during HYa');
-assert(/!globalThis\.__GFW&&([A-Za-z0-9_$]+\(a\.checkpointPayload\)&&)?[A-Za-z0-9_$]+\(e,a\.checkpointPayload\)/.test(swPatched), 'simulation-worker.tail.js skips 5.1s kYa deep-diff during mgt');
-assert(swPatched.includes('e.compression==="gzip"?z.gunzipSync(e.bytes):z.inflateSync(e.bytes)'), 'simulation-worker.tail.js uses native C++ zlib for .gsav decompression in pir');
-assert(/e\._gf\?1:2,[A-Za-z0-9_$]+\.SETTLEMENT/.test(swPatched), 'simulation-worker.tail.js uses 1 outer CGE pass on monthly ticks');
-assert(swPatched.includes('if(i&&!e._gf||d){'), 'simulation-worker.tail.js skips redundant opening UVe pass on monthly settlement');
-assert(/for\(let [A-Za-z0-9_$]+ of globalThis\.__GFW\?\[[A-Za-z0-9_$]+\]:\[[A-Za-z0-9_$]+,(1\/0|[A-Za-z0-9_$]+)\]\)/.test(swPatched), 'simulation-worker.tail.js caps supplierSearchExpansion to 1 pass');
+assert.strictEqual(swPatched, swOrig, 'simulation-worker.tail.js is clean native v1.1.0 engine (no monkey-patch conflicts)');
 
 for (const batFile of ['Install-Mod.bat', 'Uninstall-Mod.bat']) {
   const batText = fs.readFileSync(path.join(__dirname, batFile), 'utf8');
@@ -189,8 +179,8 @@ console.log('✔ [Test 4] Geoplanetical native validateModManifest() & stripImag
 const flagsPath = path.join(path.dirname(ASAR_PATH), 'app.asar.unpacked', 'electron', 'simulation-runtime-flags.js');
 if (fs.existsSync(flagsPath)) {
   const flagsContent = fs.readFileSync(flagsPath, 'utf8');
-  assert(flagsContent.includes('--max-old-space-size=4096'), 'simulation-runtime-flags.js must include --max-old-space-size=4096');
-  console.log('✔ [Test 5] V8 utilityProcess heap limit (4096MB) verified in simulation-runtime-flags.js');
+  assert(!flagsContent.includes('--max-old-space-size=4096'), 'simulation-runtime-flags.js must not include 4GB heap flag to prevent RAM swapping');
+  console.log('✔ [Test 5] Vanilla V8 utilityProcess heap limit preserved in simulation-runtime-flags.js (no RAM paging)');
 }
 
 console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.0 is ready.');

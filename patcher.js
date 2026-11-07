@@ -215,7 +215,7 @@ function transformMainJs(src) {
     `// __GEO_FIRE_MAIN__ /*__PAD_MAIN__*/\n` +
     `const __fireOn = (() => { try { const u = app.getPath('userData'); const m = JSON.parse(fs.readFileSync(path.join(u, 'mods.json'), 'utf8')); if (m && Array.isArray(m.disabled) && m.disabled.includes('geoplanetical-performance')) return false; if (fs.existsSync(path.join(u, 'mods', 'geoplanetical-performance', 'mod.json'))) return true; return !!(m && Array.isArray(m.order) && m.order.includes('geoplanetical-performance')); } catch (_) { return true; } })();\n` +
     `app.commandLine.appendSwitch('js-flags', ${flagsExpr});\n` +
-    `if (__fireOn) { process.env.NODE_OPTIONS = '--max-old-space-size=4096'; app.commandLine.appendSwitch('disable-gpu-vsync'); app.commandLine.appendSwitch('disable-frame-rate-limit'); app.commandLine.appendSwitch('enable-gpu-rasterization'); app.commandLine.appendSwitch('enable-zero-copy'); app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds'); }`;
+    `if (__fireOn) { app.commandLine.appendSwitch('disable-gpu-vsync'); app.commandLine.appendSwitch('disable-frame-rate-limit'); app.commandLine.appendSwitch('enable-gpu-rasterization'); app.commandLine.appendSwitch('enable-zero-copy'); app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds'); }`;
 
   let out = replaceOnceRegex(src, 'main.js trig/js-flags', trigRegex, replacementTrig);
 
@@ -660,249 +660,15 @@ function transformAppBundleJs(src) {
   return finalStr;
 }
 
-// ── 7. Transform renderer/simulation-worker.bundle.js Tail (100% Reversible via Live ._gf Flag) ──
+// ── 7. Transform renderer/simulation-worker.bundle.js Tail (Native v1.1.0 Simulation Engine) ──
 function transformWorkerTailJs(src) {
-  const origBytes = Buffer.byteLength(src, 'utf8');
-  if (src.includes('__GEO_FIRE_WORKER__')) return src;
-
-  let out = src;
-
-  // 7.1 In day scheduler: gate Speed 3 downgrade prevention, 16.0x speed rate, 8.0x _acc cap, and adaptive 16-24ms / 48-64ms slice budgets on ._gf
-  out = replaceOnceRegex(
-    out,
-    'worker day scheduler Turbo Speed 3 with ._gf gate',
-    /console\.error\("\[day-scheduler\][^"]+",([A-Za-z0-9_$]+)\),([A-Za-z0-9_$]+=0\}return [A-Za-z0-9_$]+\.set\(([A-Za-z0-9_$]+),\{day:[A-Za-z0-9_$]+,value:[A-Za-z0-9_$]+\}\),[A-Za-z0-9_$]+\}function [A-Za-z0-9_$]+\(\3,([A-Za-z0-9_$]+)\)\{[\s\S]*?)\3\.speedIdx>([A-Za-z0-9_$]+)&&([A-Za-z0-9_$]+)\(\)\.now\(\)>=\(([A-Za-z0-9_$]+)\.get\(\3\)\?\?-1\/0\)&&\(([A-Za-z0-9_$]+)\(\3\)>=([A-Za-z0-9_$]+)\|\|([A-Za-z0-9_$]+)\(\3\)>=\9\)&&\(\3\.speedIdx=\5\);let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\[\3\.speedIdx\];if\(!\3\.playerKey\|\|([A-Za-z0-9_$]+)\.has\(\3\)\|\|!\3\._dayJob&&([A-Za-z0-9_$]+)\(\3\)\)return!1;if\(\11&&\(\3\._acc=Math\.min\(1\.1,\3\._acc\+\4\*\11\)\),!\3\._dayJob\)\{if\(!\11\|\|\3\._acc<1\)return ([A-Za-z0-9_$]+)\(\3\),!1;\3\._acc-=1,\3\._dayJob=([A-Za-z0-9_$]+)\(\3\)\}let ([A-Za-z0-9_$]+)=\3\._dayJob;if\(\17\.fault\)return!1;let ([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=\3\._acc;\3\._acc=0;try\{let ([A-Za-z0-9_$]+)=\6\(\),([A-Za-z0-9_$]+)=\20\.now\(\);for\(\18=([A-Za-z0-9_$]+)\(\3,\17\);;\)\{let ([A-Za-z0-9_$]+)=\20\.now\(\)-\21;if\(\18==="cooperative"\?\23>=([A-Za-z0-9_$]+):\18!=="yielded"\|\|\23>=([A-Za-z0-9_$]+)\|\|([A-Za-z0-9_$]+)\(\3\)\)break;\18=\22\(\3,\17\)\}/,
-    (_, vErr, mid, vSim, vDt, vMaxSpd, fnNow, mapGrace, fnDl1, vThresh, fnDl2, vRate, arrSpd, setBusy, fnTs, fnIdle, fnNewJob, vJob, vStepRes, vSavedAcc, vClock, vT0, fnStep, vElapsed, vCoopMs, vYieldMs, fnWork) =>
-      `console.error(${vErr}),${mid}!${vSim}._gf&&${vSim}.speedIdx>${vMaxSpd}&&${fnNow}().now()>=(${mapGrace}.get(${vSim})??-1/0)&&(${fnDl1}(${vSim})>=${vThresh}||${fnDl2}(${vSim})>=${vThresh})&&(${vSim}.speedIdx=${vMaxSpd});let ${vRate}=${vSim}._gf&&${vSim}.speedIdx===3?16:${arrSpd}[${vSim}.speedIdx];if(!${vSim}.playerKey||${setBusy}.has(${vSim})||!${vSim}._dayJob&&${fnTs}(${vSim}))return!1;if(${vRate}&&(${vSim}._acc=Math.min(${vSim}._gf?8:1.1,${vSim}._acc+${vDt}*${vRate})),!${vSim}._dayJob){if(!${vRate}||${vSim}._acc<1)return ${fnIdle}(${vSim}),!1;${vSim}._acc-=1,${vSim}._dayJob=${fnNewJob}(${vSim})}let ${vJob}=${vSim}._dayJob;if(${vJob}.fault)return!1;let ${vStepRes},${vSavedAcc}=${vSim}._acc;${vSim}._acc=0;try{let ${vClock}=${fnNow}(),${vT0}=${vClock}.now();for(${vStepRes}=${fnStep}(${vSim},${vJob});;){let ${vElapsed}=${vClock}.now()-${vT0},pW=${fnWork}(${vSim}),cM=${vSim}._gf?(pW?16:48):${vCoopMs},yM=${vSim}._gf?(pW?24:64):${vYieldMs};if(${vStepRes}==="cooperative"?${vElapsed}>=cM:${vStepRes}!=="yielded"||${vElapsed}>=yM||${vElapsed}>=cM&&pW)break;${vStepRes}=${fnStep}(${vSim},${vJob})}`,
-    '_acc=Math.min(1.1,'
-  );
-
-  // 7.2 In status builder: signal continuing when ._gf && Speed 3 has more days in _acc AFTER subscribedViews() has been built
-  out = replaceOnceRegex(
-    out,
-    'worker status continuing signal',
-    /let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\.simulationWorkStatus\?\.\(\)\|\|null,([A-Za-z0-9_$]+)=\2\._dayJob,([A-Za-z0-9_$]+)=\3&&!\3\.waitingOn&&!\3\.fault\?Object\.freeze\(\{revision:\3\.phase\}\):null,/,
-    (_, vWork, vSim, vJob, vCont) => `let ${vWork}=${vSim}.simulationWorkStatus?.()||null,${vJob}=${vSim}._dayJob,${vCont}=${vJob}&&!${vJob}.waitingOn&&!${vJob}.fault?Object.freeze({revision:${vJob}.phase}):${vSim}._gf&&${vSim}.speedIdx===3&&${vSim}._acc>=1?{revision:-${vSim}.day-1}:null,`,
-    '.waitingOn&&!'
-  );
-
-  // 7.3 Increase dtSeconds clamp (.25 -> .95s) and store ._gf / __GFW in pulse() and boot()
-  out = replaceOnceRegex(
-    out,
-    'worker dtSeconds clamp',
-    /=([A-Za-z0-9_$]+)=>Math\.max\(0,Math\.min\(\.25,Number\.isFinite\(Number\(\1\)\)\?Number\(\1\):0\)\),/,
-    (_, vArg) => `=${vArg}=>Math.max(0,Math.min(.95,Number.isFinite(Number(${vArg}))?Number(${vArg}):0)),`,
-    'Math.min(.25,Number.isFinite(Number('
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'worker pulse store ._gf flag',
-    /async pulse\(([A-Za-z0-9_$]+)=\{\}\)\{let ([A-Za-z0-9_$]+)=this\.requireSession\(\);if\(this\.fault\|\|\2\._dayFault\|\|\2\._dayJob\?\.fault\)return this\.status\(!1\);/,
-    (_, vReq, vSession) => `async pulse(${vReq}={}){let ${vSession}=this.requireSession();if(${vReq}.gf!==void 0&&(globalThis.__GFW=${vSession}._gf=!!${vReq}.gf),this.fault||${vSession}._dayFault||${vSession}._dayJob?.fault)return this.status(!1);`,
-    'async pulse('
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'worker boot store __GFW flag',
-    /async boot\(([A-Za-z0-9_$]+)=\{\}\)\{let ([A-Za-z0-9_$]+)=String\(\1\.playerKey\|\|""\);/,
-    (_, vReq, vKey) => `async boot(${vReq}={}){globalThis.__GFW=${vReq}.gf!==void 0?!!${vReq}.gf:!0;let ${vKey}=String(${vReq}.playerKey||"");`,
-    'async boot('
-  );
-
-  // 7.4 Bypass ~80s synchronous transport prewarm network graph solver during boot
-  out = replaceOnceRegex(
-    out,
-    'bypass boot prewarmTransport',
-    /prewarmTransport\(\)\{return ([A-Za-z0-9_$]+)\(this,\{scope:"demand",reason:"session-load-prewarm"\}\)\}/,
-    'prewarmTransport(){return Promise.resolve({status:"idle"})}',
-    'reason:"session-load-prewarm"'
-  );
-
-  // 7.5 Area 1 (New World Boot): Native C++ zlib.gunzipSync in W5o + skip G5o SHA-256 on built-in checkpoint
-  out = replaceOnceRegex(
-    out,
-    'native zlib.gunzipSync in W5o and skip G5o SHA-256 in AYa',
-    /async function ([A-Za-z0-9_$]+)\(e\)\{if\(typeof DecompressionStream!="function"\)throw new Error\("economic T0 checkpoint gzip unavailable"\);let t=new Blob\(\[e\]\)\.stream\(\)\.pipeThrough\(new DecompressionStream\("gzip"\)\),a=await new Response\(t\)\.arrayBuffer\(\);if\(a\.byteLength>([A-Za-z0-9_$]+)\)throw new Error\("economic T0 checkpoint too large"\);return a\}async function ([A-Za-z0-9_$]+)\(e=null\)\{([\s\S]*?)if\(o\("fetchMs"\),await ([A-Za-z0-9_$]+)\(l\)!==i\.sha256\)throw new Error\("economic T0 checkpoint checksum mismatch"\);/,
-    (_, fnW5o, vMaxBytes, fnAYa, midAYa, fnG5o) =>
-      `async function ${fnW5o}(e){if(globalThis.__GFW&&typeof require=="function"){let z=require("zlib").gunzipSync(e);return z.buffer.slice(z.byteOffset,z.byteOffset+z.byteLength)}if(typeof DecompressionStream!="function")throw new Error("economic T0 checkpoint gzip unavailable");let t=new Blob([e]).stream().pipeThrough(new DecompressionStream("gzip")),a=await new Response(t).arrayBuffer();if(a.byteLength>${vMaxBytes})throw new Error("economic T0 checkpoint too large");return a}async function ${fnAYa}(e=null){${midAYa}if(o("fetchMs"),!globalThis.__GFW&&await ${fnG5o}(l)!==i.sha256)throw new Error("economic T0 checkpoint checksum mismatch");`,
-    '"economic T0 checkpoint gzip unavailable"'
-  );
-
-  // 7.6 Area 1 (New World Boot): Bypass wYa read-only schema checks on built-in 2026 checkpoint & redundant Lle in _Ya
-  out = replaceOnceRegex(
-    out,
-    'bypass wYa read-only schema checks on built-in checkpoint',
-    /if\(([A-Za-z0-9_$]+)\.has\(e\)\)return e;(a&&([A-Za-z0-9_$]+)\.add\(e\),)?([A-Za-z0-9_$]+)\(e\.cgeOpening,new Set\(r\)\),([\s\S]*?)let i=([A-Za-z0-9_$]+)\(e\.finance,r\);([\s\S]*?)([A-Za-z0-9_$]+)\.set\(e,i\),\1\.add\(e\),e\}/,
-    (_, setFYa, aAdd, setYVa, fnE7e, mid1, fnVYa, mid2, mapXgt) =>
-      `if(${setFYa}.has(e))return e;if(globalThis.__GFW)return ${aAdd || ''}${mapXgt}.set(e,${fnVYa}(e.finance,r)),${setFYa}.add(e),e;${aAdd || ''}${fnE7e}(e.cgeOpening,new Set(r)),${mid1}let i=${fnVYa}(e.finance,r);${mid2}${mapXgt}.set(e,i),${setFYa}.add(e),e}`,
-    '(e.cgeOpening,new Set(r))'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'skip redundant Lle in _Ya',
-    /function ([A-Za-z0-9_$]+)\(e,t\)\{([A-Za-z0-9_$]+)\(t,([A-Za-z0-9_$]+)\(e\)\),([A-Za-z0-9_$]+)\(t\.plants,e\.countries\.keys\(\),([A-Za-z0-9_$]+)\(e\)\);/,
-    (_, fn_Ya, fnWYa, fnYYa, fnLle, fnBIe) =>
-      `function ${fn_Ya}(e,t){${fnWYa}(t,${fnYYa}(e)),globalThis.__GFW||${fnLle}(t.plants,e.countries.keys(),${fnBIe}(e));`,
-    '(t.plants,e.countries.keys(),'
-  );
-
-  // 7.7 Area 1 (New World Boot): Free 700MB checkpointPayload early in HYa and bypass 5.1s kYa deep-diff in mgt & ugt
-  out = replaceOnceRegex(
-    out,
-    'free 700MB checkpointPayload in HYa',
-    /checkpoint:!0,checkpointPayload:t,energyCouplingConverged:!0,/,
-    'checkpoint:!0,checkpointPayload:globalThis.__GFW?null:t,energyCouplingConverged:!0,',
-    'checkpointPayload:t,energyCouplingConverged:!0,'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'bypass kYa 236MB deep-diff in mgt',
-    /if\(!([A-Za-z0-9_$]+)\(p\)\)throw new Error\("economic T0 checkpoint closure proof invalid"\);([A-Za-z0-9_$]+\(a\.checkpointPayload\)&&)?([A-Za-z0-9_$]+)\(e,a\.checkpointPayload\),/,
-    (_, fn_U, bdePrefix, fnKYa) =>
-      `if(!${fn_U}(p))throw new Error("economic T0 checkpoint closure proof invalid");!globalThis.__GFW&&${bdePrefix || ''}${fnKYa}(e,a.checkpointPayload),`,
-    '"economic T0 checkpoint closure proof invalid"'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'fast-path ugt CGE ledger double-hash',
-    /function ([A-Za-z0-9_$]+)\(e\)\{if\(!e\?\.transport\?\.lastSolve\|\|([A-Za-z0-9_$]+)\(e\)\)return!1;try\{if\(([A-Za-z0-9_$]+)\(e\.transport\.cgeLedger\)!==\3\(([A-Za-z0-9_$]+)\(e\)\)\)return!1\}catch\{return!1\}/,
-    (_, fnUgt, fnS7, fnEA, fnAa) =>
-      `function ${fnUgt}(e){if(!e?.transport?.lastSolve||${fnS7}(e))return!1;if(globalThis.__GFW)return!0;try{if(${fnEA}(e.transport.cgeLedger)!==${fnEA}(${fnAa}(e)))return!1}catch{return!1}`,
-    'e.transport.cgeLedger)!=='
-  );
-
-  // 7.8 Area 2 (Save Load): Native C++ zlib in pir for gzip/deflate save payload parts
-  out = replaceOnceRegex(
-    out,
-    'native zlib in pir for save payload decompression',
-    /async function ([A-Za-z0-9_$]+)\(e,\{readOnly:t=!1\}=\{\}\)\{if\(e\.compression==="identity"\)return t\?e\.bytes:e\.bytes\.slice\(0\);/,
-    (_, fnPir) =>
-      `async function ${fnPir}(e,{readOnly:t=!1}={}){if(e.compression==="identity")return t?e.bytes:e.bytes.slice(0);if(globalThis.__GFW&&typeof require=="function"){let z=require("zlib"),b=e.compression==="gzip"?z.gunzipSync(e.bytes):z.inflateSync(e.bytes);return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength)}`,
-    'if(e.compression==="identity")return t?e.bytes:e.bytes.slice(0);'
-  );
-
-  // 7.9 Area 2 (Save Load): Initialize e._gf in ggo and skip overwritten 2026 society/macro init when r.restore is true
-  out = replaceOnceRegex(
-    out,
-    'init e._gf in ggo and skip overwritten society/macro init on restore',
-    /function ([A-Za-z0-9_$]+)\(e,t,a,r=null\)\{let o=a>>>0\|\|([A-Za-z0-9_$]+);e\.world=t,e\.day=0,([\s\S]*?)\["society",\(\)=>\{for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\);([A-Za-z0-9_$]+)\(t,e\.countries\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)e\._initFiscal\(o,o\.eco\),([A-Za-z0-9_$]+)\(o\);for\(let o of e\.countries\.values\(\)\)o\.pol&&\(o\.laws0=([A-Za-z0-9_$]+)\(o\.key,\{mood:o\.pol\.mood,regime:o\.pol\.regime,country:o\}\),o\.laws=([A-Za-z0-9_$]+)\(o\.laws0\),([A-Za-z0-9_$]+)\(o,\{anchor:!0\}\),o\.procedures=\[\],o\.lawCooldown=\{\},o\.pol\.procedureSeq=0\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o,e\._participationOf\(o\)\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),e\._setTvaEff\(o\),e\._initIRBrackets\(o,\{restore:!!r\.restore\}\);for\(let o of e\.countries\.values\(\)\)!o\.pol\|\|!o\.pops\|\|\(([A-Za-z0-9_$]+)\(o\.pol,e\._voterBlocs\(o\)\),([A-Za-z0-9_$]+)\(o\.pol\)\)\}\],\["macro",\(\)=>\{([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)o\.pol&&o\.pops&&\20\(o\.pol,e\._voterBlocs\(o\)\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),\27\(e\),\28\(e\)\}\]/,
-    (_, fnGgo, vXYa, midGgo, fnB$t, fnU6, fnTWa, fnN1a, fnZKe, fnVXt, fnESt, fnMr, fnB5e, fnLWe, fnMUe, fnZOt, fnSXt, fnW7a, fnRB, fnWMe, fnJB, fnS8, fnRWa, fnJ9e, fnCWa, fnEYa, fnDkt, fnG4t, fnQlt, fnVNa, fnZYa, fnB0a) =>
-      `function ${fnGgo}(e,t,a,r=null){let o=a>>>0||${vXYa};e._gf=globalThis.__GFW??!0,e.world=t,e.day=0,${midGgo}["society",()=>{for(let o of e.countries.values())${fnB$t}(o),${fnU6}(o);${fnTWa}(t,e.countries),${fnN1a}(e),${fnZKe}(e);for(let o of e.countries.values())e._initFiscal(o,o.eco),${fnVXt}(o);for(let o of e.countries.values())o.pol&&(o.laws0=${fnESt}(o.key,{mood:o.pol.mood,regime:o.pol.regime,country:o}),o.laws=${fnMr}(o.laws0),${fnB5e}(o,{anchor:!0}),o.procedures=[],o.lawCooldown={},o.pol.procedureSeq=0);for(let o of e.countries.values())${fnLWe}(o),${fnMUe}(o),${fnZOt}(o,e._participationOf(o)),${fnSXt}(o),${fnW7a}(o),!(globalThis.__GFW&&r.restore)&&(${fnRB}(o),${fnWMe}(o)),e._setTvaEff(o),e._initIRBrackets(o,{restore:!!r.restore});if(!(globalThis.__GFW&&r.restore))for(let o of e.countries.values())!o.pol||!o.pops||(${fnJB}(o.pol,e._voterBlocs(o)),${fnS8}(o.pol))}],["macro",()=>{${fnRWa}(e);for(let o of e.countries.values())${fnJ9e}(o);${fnCWa}(e),${fnEYa}(e);if(!(globalThis.__GFW&&r.restore)){for(let o of e.countries.values())o.pol&&o.pops&&${fnJB}(o.pol,e._voterBlocs(o));${fnDkt}(e),${fnG4t}(e),${fnQlt}(e)}${fnVNa}(e),!(globalThis.__GFW&&r.restore)&&${fnZYa}(e),${fnB0a}(e),${fnG4t}(e),!(globalThis.__GFW&&r.restore)&&${fnQlt}(e)}]`,
-    '["society",()=>{'
-  );
-
-  // 7.10 Area 2 (Save Load): Fast-path wc path object allocations, $Xa dry-run, xer YDe walk, v4o m5t walk, and $2e double-clone
-  out = replaceOnceRegex(
-    out,
-    'eliminate wc path object allocations in MC',
-    /var ([A-Za-z0-9_$]+)=\(e,t\)=>\(\{parent:e,key:t\}\);function ([A-Za-z0-9_$]+)\(e\)\{/,
-    (_, fnWc, fnCC) => `var ${fnWc}=(e,t)=>globalThis.__GFW?e:{parent:e,key:t};function ${fnCC}(e){`,
-    '=>({parent:e,key:t});function '
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'skip $Xa dry-run in save deserialization',
-    /function ([A-Za-z0-9_$]+)\(e,t\)\{([A-Za-z0-9_$]+)\(e,t,!1,\[\],0\)\}function ([A-Za-z0-9_$]+)\(e,t="\$"\)\{/,
-    (_, fn$Xa, fnMC, fnXo) => `function ${fn$Xa}(e,t){globalThis.__GFW||${fnMC}(e,t,!1,[],0)}function ${fnXo}(e,t="$"){`,
-    '(e,t,!1,[],0)}function '
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'skip YDe full-graph walk in xer',
-    /function ([A-Za-z0-9_$]+)\(e\)\{([A-Za-z0-9_$]+)\(e\);let t=new Set\(\[e\?\.sat\?\.transport,e\?\.sat\?\.finance\]\.filter\(n=>n!==null&&typeof n=="object"\)\);([A-Za-z0-9_$]+)\(e,"\$",new WeakSet,0,t\);/,
-    (_, fnXer, fnK5t, fnYDe) =>
-      `function ${fnXer}(e){${fnK5t}(e);let t=new Set([e?.sat?.transport,e?.sat?.finance].filter(n=>n!==null&&typeof n=="object"));globalThis.__GFW||${fnYDe}(e,"$",new WeakSet,0,t);`,
-    '(e,"$",new WeakSet,0,t);'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'fast-path v4o m5t walk and $2e finance double-clone & audits',
-    /r=null,([A-Za-z0-9_$]+)\(o\);let n;try\{n=([A-Za-z0-9_$]+)\(o\)\}([\s\S]*?)function ([A-Za-z0-9_$]+)\(e,t=\{\}\)\{if\(t\.repairForLoad!==!0\)return ([A-Za-z0-9_$]+)\(e,t\),([A-Za-z0-9_$]+)\(t\.takeOwnership===!0\?e:([A-Za-z0-9_$]+)\(e\),t\);([A-Za-z0-9_$]+)\(e\);let a=t\.takeOwnership===!0\?e:\7\(e\);([\s\S]*?)let r;try\{return ([A-Za-z0-9_$]+)\(a,t\),\6\(a,t\)\}catch\(o\)\{r=o\}([\s\S]*?)try\{([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\)\}catch\(a\)\{[\s\S]*?\}return ([A-Za-z0-9_$]+)\.add\(e\),([A-Za-z0-9_$]+)\.set\(e,\{ok:!0,errors:\[\]\}\),([A-Za-z0-9_$]+)\.add\(e\),e\}([\s\S]*?)t\.countries&&([A-Za-z0-9_$]+)\(\{finance:e,countries:t\.countries\}\)/,
-    (_, fnM5t, fnD4o, midV4o, fn$2e, fnV5t, fnD5t, fnGHa, fn$Ha, midRepair, fnF5t, midCatch, fnMye, fnLM, fnNH, setEDe, mapPX, setHpe, midAgt, fnUj) =>
-      `r=null,globalThis.__GFW||${fnM5t}(o);let n;try{n=${fnD4o}(o)}${midV4o}function ${fn$2e}(e,t={}){let F=x=>(${fnMye}(x),${fnLM}(x),${fnNH}(x),${mapPX}.set(x,{ok:!0,errors:[]}),${setHpe}.add(x),t.countries&&${fnUj}({finance:x,countries:t.countries}),x);if(globalThis.__GFW&&t.repairForLoad!==!0)return F(e);if(t.repairForLoad!==!0)return ${fnV5t}(e,t),${fnD5t}(t.takeOwnership===!0?e:${fnGHa}(e),t);globalThis.__GFW||${fn$Ha}(e);let a=globalThis.__GFW||t.takeOwnership===!0?e:${fnGHa}(e);${midRepair}if(globalThis.__GFW)return F(a);let r;try{return ${fnF5t}(a,t),${fnD5t}(a,t)}catch(o){r=o}${midCatch}try{${fnMye}(e),${fnLM}(e),${fnNH}(e)}catch(a){}return ${setEDe}.add(e),${mapPX}.set(e,{ok:!0,errors:[]}),${setHpe}.add(e),e}${midAgt}t.countries&&${fnUj}({finance:e,countries:t.countries})`,
-    'if(t.repairForLoad!==!0)return '
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'skip jse and d0e external audits in IOe when __GFW active',
-    /if\(!([A-Za-z0-9_$]+)\.has\(e\.finance\)\)\{let a=([A-Za-z0-9_$]+)\(e\.finance,\{countryKeys:e\.countries\?\.keys\?\.\(\)\|\|\[\]\}\);/,
-    (_, setVOe, fnJse) =>
-      `if(!globalThis.__GFW&&!${setVOe}.has(e.finance)){let a=${fnJse}(e.finance,{countryKeys:e.countries?.keys?.()||[]});`,
-    '.has(e.finance)){let a='
-  );
-
-  // 7.11 Area 3 (Monthly Tick): 1 outer CGE pass in a4o, skip redundant 'opening' UVe pass in Bzt, and cap tLt to [lTt]
-  out = replaceOnceRegex(
-    out,
-    'single outer CGE settlement pass in a4o when _gf active',
-    /function\*([A-Za-z0-9_$]+)\(e,t=\{\}\)\{let\{periodYears:a\}=([A-Za-z0-9_$]+)\(t\);yield\*([A-Za-z0-9_$]+)\(e,a,2,([A-Za-z0-9_$]+)\.SETTLEMENT,t\)\}/,
-    (_, fnA4o, fnYHa, fnBHa, enumKd) =>
-      `function*${fnA4o}(e,t={}){let{periodYears:a}=${fnYHa}(t);yield*${fnBHa}(e,a,e._gf?1:2,${enumKd}.SETTLEMENT,t)}`,
-    '.SETTLEMENT,t)}'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'skip redundant opening UVe pass in Bzt on monthly settlement when _gf active',
-    /return ([A-Za-z0-9_$]+)\.opening=([A-Za-z0-9_$]+)\.diagnostics,\2\.flows\}\}\),([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=null;if\(i\|\|d\)\{/,
-    (_, vM, vRes, vE, vK, vD) =>
-      `return ${vM}.opening=${vRes}.diagnostics,${vRes}.flows}}),${vE}=${vK},${vD}=null;if(i&&!e._gf||d){`,
-    '.opening='
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'cap supplierSearchExpansion tLt to 1 pass',
-    /function\*([A-Za-z0-9_$]+)\(\{markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l(,pool:c=null)?\}\)\{for\(let ([A-Za-z0-9_$]+) of\[([A-Za-z0-9_$]+),(1\/0|[A-Za-z0-9_$]+)\]\)/,
-    (_, fnTLt, poolArg, vLoop, vLTt, vSecond) =>
-      `function*${fnTLt}({markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l${poolArg || ''}}){for(let ${vLoop} of globalThis.__GFW?[${vLTt}]:[${vLTt},${vSecond}])`,
-    'supplierSearchExpansion'
-  );
-
-  // 7.12 Reclaim unused _doc strings for byte-exact padding slack (minifier-resilient anchors)
-  out = replaceOnceRegex(
-    out,
-    'reclaim war theatre _doc slack',
-    /var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",theatre:\{reservePctDefault:0/,
-    (_, vF_a) => `var ${vF_a}={_doc:"",theatre:{reservePctDefault:0`,
-    ',theatre:{reservePctDefault:0'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'reclaim regional questions _doc slack',
-    /var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",questions:\[\{id:"abkhazia"/,
-    (_, vJka) => `var ${vJka}={_doc:"",questions:[{id:"abkhazia"`,
-    ',questions:[{id:"abkhazia"'
-  );
-
-  out = replaceOnceRegex(
-    out,
-    'reclaim relative_sector_wages _doc slack',
-    /var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",sources:\[\{id:"relative_sector_wages"/,
-    (_, vH4t) => `var ${vH4t}={_doc:"",sources:[{id:"relative_sector_wages"`,
-    ',sources:[{id:"relative_sector_wages"'
-  );
-
-  // 7.13 Replace trailing license comment with pad token
-  out = replaceOnceRegex(
-    out,
-    'worker trailing license comment pad token',
-    /\/\*! Bundled license information:[\s\S]*?\*\//,
-    `// __GEO_FIRE_WORKER__ /*__PAD_WORKER__*/`,
-    '/*! Bundled license information:'
-  );
-
-  return padToExactBytes(out, origBytes, '/*__PAD_WORKER__*/', 'renderer/simulation-worker.bundle.js');
+  // v1.6.0: Preserves vanilla simulation-worker.bundle.js 100% untouched.
+  // In v1.1.0, the game developer overhauled the economic engine (Banks, Stocks, Puppets, regional trade,
+  // and T0 checkpoint). Monkey-patching day scheduling or trade loops causes retry stalls and skips 1.1.0
+  // banking/puppet initialization during save load. By leaving the native 1.1.0 simulation engine clean,
+  // we eliminate all simulation conflicts while retaining all pure Three.js graphics, shader, CSS blur,
+  // 25s intro audio bypass, and background atlas label optimizations in app.bundle.js.
+  return src;
 }
 
 // ── 8. Compute ASAR Integrity Object (SHA256 + 4MB blocks) ──
@@ -1106,7 +872,10 @@ function install() {
         const slice = patchedWorkerTailBuf.subarray(localOff, Math.min(localOff + BLOCK_SIZE, patchedWorkerTailBuf.length));
         workerEntry.integrity.blocks[b] = crypto.createHash('sha256').update(slice).digest('hex');
       }
-      console.log(`  -> Patched ${workerRel} tail (${patchedWorkerTailBuf.length.toLocaleString()} bytes, unpacked=${isUnpacked})`);
+      if (fs.existsSync(workerBackupFile + '.integrity.json')) {
+        workerEntry.integrity = JSON.parse(fs.readFileSync(workerBackupFile + '.integrity.json', 'utf8'));
+      }
+      console.log(`  -> Preserved native vanilla ${workerRel} tail (${patchedWorkerTailBuf.length.toLocaleString()} bytes, unpacked=${isUnpacked})`);
     } finally {
       if (isUnpacked) fs.closeSync(workerFd);
     }
@@ -1119,23 +888,20 @@ function install() {
     fs.writeSync(fd, Buffer.from(newHeaderStr, 'utf8'), 0, headerSize, 16);
     console.log('[2/4] Updated ASAR SHA-256 block integrity hashes in-place.');
 
-    // Patch electron/simulation-runtime-flags.js to pass 4GB heap to utilityProcess
+    // Ensure electron/simulation-runtime-flags.js uses vanilla heap settings to prevent RAM paging on 8GB machines
     const flagsRel = path.join('electron', 'simulation-runtime-flags.js');
     const unpackedFlagsPath = path.join(UNPACKED_DIR, flagsRel);
     if (fs.existsSync(unpackedFlagsPath)) {
       const flagsBackupFile = path.join(backupDir, 'electron__simulation-runtime-flags.js');
-      const flagsRaw = fs.readFileSync(unpackedFlagsPath, 'utf8');
-      if (!fs.existsSync(flagsBackupFile)) {
-        if (!flagsRaw.includes('--max-old-space-size=4096')) {
-          fs.writeFileSync(flagsBackupFile, flagsRaw, 'utf8');
+      if (fs.existsSync(flagsBackupFile)) {
+        fs.writeFileSync(unpackedFlagsPath, fs.readFileSync(flagsBackupFile, 'utf8'), 'utf8');
+      } else {
+        const flagsRaw = fs.readFileSync(unpackedFlagsPath, 'utf8');
+        if (flagsRaw.includes('--max-old-space-size=4096')) {
+          fs.writeFileSync(unpackedFlagsPath, flagsRaw.replace(/,\s*'--max-old-space-size=4096'/g, ''), 'utf8');
         }
       }
-      mirrorBackupFile(flagsBackupFile);
-      if (!flagsRaw.includes('--max-old-space-size=4096')) {
-        const patchedFlags = flagsRaw.replace(`'--expose-gc']`, `'--expose-gc', '--max-old-space-size=4096']`);
-        fs.writeFileSync(unpackedFlagsPath, patchedFlags, 'utf8');
-        console.log(`  -> Injected --max-old-space-size=4096 into ${flagsRel}`);
-      }
+      console.log(`  -> Preserved vanilla ${flagsRel} (no RAM swapping)`);
     }
   } finally {
     fs.closeSync(fd);
