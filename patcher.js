@@ -635,6 +635,26 @@ function transformAppBundleJs(src) {
     '.request("session-switch")'
   );
 
+  // 6.27 Skip up to 25s intro broadcast holding loading screen on new game creation
+  out = replaceOnceRegex(
+    out,
+    'skip blocking intro voice holding new game loading screen',
+    /c\|\|await Promise\.race\(\[l,([A-Za-z0-9_$]+)\.armSkip\(\(\)=>([A-Za-z0-9_$]+)\.stopBroadcastVoice\(\.6\)\)\]\)/,
+    (_, clsG0, clsJa) =>
+      `__GFM()||c||await Promise.race([l,${clsG0}.armSkip(()=>${clsJa}.stopBroadcastVoice(.6))])`,
+    '.armSkip('
+  );
+
+  // 6.28 Non-blocking nation label baking on new game loading screen
+  out = replaceOnceRegex(
+    out,
+    'non-blocking nation label baking on loading screen',
+    /([A-Za-z0-9_$]+)=await ([A-Za-z0-9_$]+)\.prepareNationLabels\(\{loadingScreen:!0\}\)/,
+    (_, vM, clsWe) =>
+      `${vM}=await ${clsWe}.prepareNationLabels({loadingScreen:!__GFM()})`,
+    '.prepareNationLabels({loadingScreen:!0})'
+  );
+
   const finalStr = padToExactBytes(out, origBytes, '/*__PAD_BUNDLE__*/', 'renderer/app.bundle.js');
   new vm.Script(finalStr, { filename: 'renderer/app.bundle.js' });
   return finalStr;
