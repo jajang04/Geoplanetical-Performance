@@ -21,7 +21,7 @@ const {
 const ver = detectGameVersion();
 const BACKUP_DIR = getBackupDir();
 
-console.log(`=== Running Geoplanetical Fire Performance Mod v1.5.0 Verification Suite (Game v${ver}) ===\n`);
+console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.0 Verification Suite (Game v${ver}) ===\n`);
 
 // Helper to read raw file & header entry from ASAR
 function readFromAsar(relPath) {
@@ -57,6 +57,7 @@ const mainOrig = fs.readFileSync(path.join(BACKUP_DIR, 'electron__main.js'), 'ut
 const mainPatched = transformMainJs(mainOrig);
 assert.strictEqual(Buffer.byteLength(mainPatched, 'utf8'), Buffer.byteLength(mainOrig, 'utf8'), 'main.js byte length exact');
 assert(mainPatched.includes('__GEO_FIRE_MAIN__'), 'main.js contains Fire Mod hook');
+assert(mainPatched.includes("process.env.NODE_OPTIONS = '--max-old-space-size=4096'"), 'main.js sets 4GB V8 heap limit for simulation worker via NODE_OPTIONS');
 
 const wkOrig = fs.readFileSync(path.join(BACKUP_DIR, 'electron__mods__mod-workshop.js'), 'utf8');
 const wkPatched = transformWorkshopJs(wkOrig);
@@ -75,13 +76,35 @@ assert(!/key===(["'])F11\1[^}]*__GEO_FIRE_TURBO__/.test(bundlePatched), 'app.bun
 assert(bundlePatched.includes('__GFTOAST'), 'app.bundle.js contains screen toast notifications');
 assert(bundlePatched.includes('subscribeView(t,a={},n=!0)'), 'app.bundle.js contains Month-End UI Browsing cache adapter');
 assert(bundlePatched.includes('r?.pending?this.views.get(t):null'), 'app.bundle.js provides pending cached view snapshot during month-end');
+assert(bundlePatched.includes('.BOOT,{...t,gf:__GFM("turbo")},'), 'app.bundle.js passes gf flag during session.boot');
+assert(bundlePatched.includes('__GFM()||await ') && bundlePatched.includes('.request("session-switch")'), 'app.bundle.js skips blocking session-switch autosave on in-game save load');
 
 const swOrig = fs.readFileSync(path.join(BACKUP_DIR, 'renderer__simulation-worker.tail.js'), 'utf8');
 const swPatched = transformWorkerTailJs(swOrig);
+const unpackedWorker = path.join(path.dirname(ASAR_PATH), 'app.asar.unpacked', 'renderer', 'simulation-worker.bundle.js');
+if (fs.existsSync(unpackedWorker)) {
+  new vm.Script(fs.readFileSync(unpackedWorker, 'utf8'), { filename: 'renderer/simulation-worker.bundle.js' });
+}
 assert.strictEqual(Buffer.byteLength(swPatched, 'utf8'), Buffer.byteLength(swOrig, 'utf8'), 'simulation-worker.tail.js byte length exact');
 assert(swPatched.includes('__GEO_FIRE_WORKER__'), 'simulation-worker.tail.js contains Turbo Speed 3 hook');
 assert(/[A-Za-z0-9_$]+\._gf&&[A-Za-z0-9_$]+\.speedIdx===3\?16:/.test(swPatched), 'simulation-worker.tail.js gates 16.0x Speed 3 on live ._gf flag');
+assert(swPatched.includes('cM=') && swPatched.includes('(pW?16:48)') && swPatched.includes('(pW?24:64)'), 'simulation-worker.tail.js uses adaptive 16-24ms / 48-64ms cooperative slice budgets');
 assert(swPatched.includes('prewarmTransport(){return Promise.resolve({status:"idle"})}'), 'simulation-worker.tail.js bypasses 80s boot prewarmTransport');
+assert(swPatched.includes('require("zlib").gunzipSync(e)'), 'simulation-worker.tail.js uses native C++ zlib.gunzipSync for T0 checkpoint');
+assert(swPatched.includes('if(globalThis.__GFW)return sgt.set(e,vYa(e.finance,r))'), 'simulation-worker.tail.js bypasses wYa read-only schema checks on built-in checkpoint');
+assert(swPatched.includes('if(globalThis.__GFW)return F(a);'), 'simulation-worker.tail.js fast-paths $2e finance double-clone and ledger audits on boot and save load');
+assert(swPatched.includes('checkpointPayload:globalThis.__GFW?null:t'), 'simulation-worker.tail.js frees 700MB checkpointPayload early during HYa');
+assert(swPatched.includes('globalThis.__GFW||kYa(e,a.checkpointPayload)'), 'simulation-worker.tail.js skips 5.1s kYa deep-diff during mgt');
+assert(swPatched.includes('e.compression==="gzip"?z.gunzipSync(e.bytes):z.inflateSync(e.bytes)'), 'simulation-worker.tail.js uses native C++ zlib for .gsav decompression in pir');
+assert(swPatched.includes('e._gf?1:2,kd.SETTLEMENT'), 'simulation-worker.tail.js uses 1 outer CGE pass on monthly ticks');
+assert(swPatched.includes('if(i&&!e._gf||d){'), 'simulation-worker.tail.js skips redundant opening UVe pass on monthly settlement');
+assert(swPatched.includes('for(let c of globalThis.__GFW?[lTt]:[lTt,1/0])'), 'simulation-worker.tail.js caps supplierSearchExpansion to 1 pass');
+
+for (const batFile of ['Install-Mod.bat', 'Uninstall-Mod.bat']) {
+  const batText = fs.readFileSync(path.join(__dirname, batFile), 'utf8');
+  assert(!/\)\s*else\s*\(/i.test(batText), `${batFile} must not use if (...) else (...) blocks that break on (x86) paths`);
+  assert(batText.includes('goto :run_node') && batText.includes('$env:GEO_MOD_DIR'), `${batFile} uses label-based branching and GEO_MOD_DIR env var`);
+}
 console.log('✔ [Test 2] All JS transforms preserve exact byte lengths, pass VM syntax validation, and enforce 100% reversible Active-Mod gating');
 
 // 3. Verify Patched ASAR Integrity Hashes & Fuse Status
@@ -158,4 +181,4 @@ const installedThumbBytes = fs.readFileSync(path.join(LOCAL_MOD_DIR, 'thumb.png'
 const stripped = modImageMeta.stripImageMetadata(installedThumbBytes, '.png');
 assert(stripped.bytes.length > 100, 'stripImageMetadata succeeds on thumb.png');
 console.log('✔ [Test 4] Geoplanetical native validateModManifest() & stripImageMetadata() passed 100%!');
-console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.5.0 is ready.');
+console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.0 is ready.');

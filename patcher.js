@@ -13,14 +13,23 @@ const os = require('os');
 function resolveGameDir() {
   const candidates = [
     process.env.GEO_GAME_DIR,
-    // Relative path when running inside steamapps/workshop/content/940230/<itemId>/
+    // Relative path when running inside steamapps/workshop/content/4137120/<itemId>/
     path.resolve(__dirname, '..', '..', '..', '..', 'common', 'Geoplanetical'),
     'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Geoplanetical',
     'C:\\Program Files\\Steam\\steamapps\\common\\Geoplanetical',
     'D:\\SteamLibrary\\steamapps\\common\\Geoplanetical',
-    'E:\\SteamLibrary\\steamapps\\common\\Geoplanetical'
-  ].filter(Boolean);
-  for (const dir of candidates) {
+    'E:\\SteamLibrary\\steamapps\\common\\Geoplanetical',
+    'F:\\SteamLibrary\\steamapps\\common\\Geoplanetical'
+  ];
+  for (const steamRoot of ['C:\\Program Files (x86)\\Steam', 'C:\\Program Files\\Steam']) {
+    try {
+      const vdf = fs.readFileSync(path.join(steamRoot, 'steamapps', 'libraryfolders.vdf'), 'utf8');
+      for (const m of vdf.matchAll(/"path"\s+"([^"]+)"/g)) {
+        candidates.push(path.join(m[1].replace(/\\\\/g, '\\'), 'steamapps', 'common', 'Geoplanetical'));
+      }
+    } catch (_) {}
+  }
+  for (const dir of candidates.filter(Boolean)) {
     if (fs.existsSync(path.join(dir, 'resources', 'app.asar'))) {
       return dir;
     }
@@ -36,6 +45,7 @@ const APPDATA_DIR = process.env.APPDATA || path.join(os.homedir(), 'AppData', 'R
 const USER_DATA_DIR = path.join(APPDATA_DIR, 'Geoplanetical');
 const LOCAL_MOD_DIR = path.join(USER_DATA_DIR, 'mods', 'geoplanetical-performance');
 const MOD_PACK_DIR = path.join(__dirname, 'mod-pack');
+const SHARED_BACKUP_ROOT = path.join(USER_DATA_DIR, 'backups');
 
 const FUSE_SENTINEL = Buffer.from('dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX');
 const BLOCK_SIZE = 4 * 1024 * 1024; // 4 MiB SHA256 integrity block size in ASAR
@@ -79,7 +89,23 @@ function detectGameVersion() {
 
 function getBackupDir() {
   const ver = detectGameVersion();
-  return path.join(__dirname, 'backups', `v${ver}`);
+  const localDir = path.join(__dirname, 'backups', `v${ver}`);
+  const sharedDir = path.join(SHARED_BACKUP_ROOT, `v${ver}`);
+  if (fs.existsSync(path.join(localDir, 'electron__main.js'))) return localDir;
+  if (fs.existsSync(path.join(sharedDir, 'electron__main.js'))) return sharedDir;
+  return localDir;
+}
+
+function mirrorBackupFile(srcFile) {
+  try {
+    const ver = detectGameVersion();
+    const sharedDir = path.join(SHARED_BACKUP_ROOT, `v${ver}`);
+    fs.mkdirSync(sharedDir, { recursive: true });
+    const destFile = path.join(sharedDir, path.basename(srcFile));
+    if (path.resolve(srcFile) !== path.resolve(destFile)) {
+      fs.copyFileSync(srcFile, destFile);
+    }
+  } catch (_) {}
 }
 
 // ── 2. Generate Valid 512x512 PNG Thumbnail for Mod Manager & Steam Workshop ──
@@ -189,7 +215,7 @@ function transformMainJs(src) {
     `// __GEO_FIRE_MAIN__ /*__PAD_MAIN__*/\n` +
     `const __fireOn = (() => { try { const u = app.getPath('userData'); const m = JSON.parse(fs.readFileSync(path.join(u, 'mods.json'), 'utf8')); if (m && Array.isArray(m.disabled) && m.disabled.includes('geoplanetical-performance')) return false; if (fs.existsSync(path.join(u, 'mods', 'geoplanetical-performance', 'mod.json'))) return true; return !!(m && Array.isArray(m.order) && m.order.includes('geoplanetical-performance')); } catch (_) { return true; } })();\n` +
     `app.commandLine.appendSwitch('js-flags', ${flagsExpr});\n` +
-    `if (__fireOn) { app.commandLine.appendSwitch('disable-gpu-vsync'); app.commandLine.appendSwitch('disable-frame-rate-limit'); app.commandLine.appendSwitch('enable-gpu-rasterization'); app.commandLine.appendSwitch('enable-zero-copy'); app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds'); }`;
+    `if (__fireOn) { process.env.NODE_OPTIONS = '--max-old-space-size=4096'; app.commandLine.appendSwitch('disable-gpu-vsync'); app.commandLine.appendSwitch('disable-frame-rate-limit'); app.commandLine.appendSwitch('enable-gpu-rasterization'); app.commandLine.appendSwitch('enable-zero-copy'); app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds'); }`;
 
   let out = replaceOnceRegex(src, 'main.js trig/js-flags', trigRegex, replacementTrig);
 
@@ -589,6 +615,26 @@ function transformAppBundleJs(src) {
     '.VIEW_SUBSCRIBE,{viewId:t,'
   );
 
+  // 6.25 Pass gf flag during session.boot so worker fast-paths New World Generation & Save Load
+  out = replaceOnceRegex(
+    out,
+    'pass gf flag in session.boot request',
+    /async boot\(t\)\{let a=Array\.isArray\(t\?\.savePayload\?\.parts\)\?t\.savePayload\.parts:\[\],n=\[\.\.\.new Set\(a\.map\(i=>i\?\.bytes\)\.filter\(i=>i instanceof ArrayBuffer\)\)\],r=await this\.request\(([A-Za-z0-9_$]+)\.BOOT,t,/,
+    (_, enumCmd) =>
+      `async boot(t){let a=Array.isArray(t?.savePayload?.parts)?t.savePayload.parts:[],n=[...new Set(a.map(i=>i?.bytes).filter(i=>i instanceof ArrayBuffer))],r=await this.request(${enumCmd}.BOOT,{...t,gf:__GFM("turbo")},`,
+    '.BOOT,t,'
+  );
+
+  // 6.26 Skip 15-28s blocking session-switch autosave when loading a save file from inside an active match
+  out = replaceOnceRegex(
+    out,
+    'skip blocking session-switch autosave on in-game save load',
+    /async function ([A-Za-z0-9_$]+)\(e,t=null\)\{if\(([A-Za-z0-9_$]+)==="game"&&([A-Za-z0-9_$]+)&&([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\(window\),e\)\)return await ([A-Za-z0-9_$]+)\.request\("session-switch"\),/,
+    (_, fnPPt, vUn, vJe, fnI9e, fnkA, vU8) =>
+      `async function ${fnPPt}(e,t=null){if(${vUn}==="game"&&${vJe}&&${fnI9e}(${fnkA}(window),e))return __GFM()||await ${vU8}.request("session-switch"),`,
+    '.request("session-switch")'
+  );
+
   const finalStr = padToExactBytes(out, origBytes, '/*__PAD_BUNDLE__*/', 'renderer/app.bundle.js');
   new vm.Script(finalStr, { filename: 'renderer/app.bundle.js' });
   return finalStr;
@@ -601,13 +647,13 @@ function transformWorkerTailJs(src) {
 
   let out = src;
 
-  // 7.1 In day scheduler: gate Speed 3 downgrade prevention, 16.0x speed rate, 8.0x _acc cap, and 75ms/99ms slice budgets on ._gf
+  // 7.1 In day scheduler: gate Speed 3 downgrade prevention, 16.0x speed rate, 8.0x _acc cap, and adaptive 16-24ms / 48-64ms slice budgets on ._gf
   out = replaceOnceRegex(
     out,
     'worker day scheduler Turbo Speed 3 with ._gf gate',
     /console\.error\("\[day-scheduler\][^"]+",([A-Za-z0-9_$]+)\),([A-Za-z0-9_$]+=0\}return [A-Za-z0-9_$]+\.set\(([A-Za-z0-9_$]+),\{day:[A-Za-z0-9_$]+,value:[A-Za-z0-9_$]+\}\),[A-Za-z0-9_$]+\}function [A-Za-z0-9_$]+\(\3,([A-Za-z0-9_$]+)\)\{[\s\S]*?)\3\.speedIdx>([A-Za-z0-9_$]+)&&([A-Za-z0-9_$]+)\(\)\.now\(\)>=\(([A-Za-z0-9_$]+)\.get\(\3\)\?\?-1\/0\)&&\(([A-Za-z0-9_$]+)\(\3\)>=([A-Za-z0-9_$]+)\|\|([A-Za-z0-9_$]+)\(\3\)>=\9\)&&\(\3\.speedIdx=\5\);let ([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)\[\3\.speedIdx\];if\(!\3\.playerKey\|\|([A-Za-z0-9_$]+)\.has\(\3\)\|\|!\3\._dayJob&&([A-Za-z0-9_$]+)\(\3\)\)return!1;if\(\11&&\(\3\._acc=Math\.min\(1\.1,\3\._acc\+\4\*\11\)\),!\3\._dayJob\)\{if\(!\11\|\|\3\._acc<1\)return ([A-Za-z0-9_$]+)\(\3\),!1;\3\._acc-=1,\3\._dayJob=([A-Za-z0-9_$]+)\(\3\)\}let ([A-Za-z0-9_$]+)=\3\._dayJob;if\(\17\.fault\)return!1;let ([A-Za-z0-9_$]+),([A-Za-z0-9_$]+)=\3\._acc;\3\._acc=0;try\{let ([A-Za-z0-9_$]+)=\6\(\),([A-Za-z0-9_$]+)=\20\.now\(\);for\(\18=([A-Za-z0-9_$]+)\(\3,\17\);;\)\{let ([A-Za-z0-9_$]+)=\20\.now\(\)-\21;if\(\18==="cooperative"\?\23>=([A-Za-z0-9_$]+):\18!=="yielded"\|\|\23>=([A-Za-z0-9_$]+)\|\|([A-Za-z0-9_$]+)\(\3\)\)break;\18=\22\(\3,\17\)\}/,
     (_, vErr, mid, vSim, vDt, vMaxSpd, fnNow, mapGrace, fnDl1, vThresh, fnDl2, vRate, arrSpd, setBusy, fnTs, fnIdle, fnNewJob, vJob, vStepRes, vSavedAcc, vClock, vT0, fnStep, vElapsed, vCoopMs, vYieldMs, fnWork) =>
-      `console.error(${vErr}),${mid}!${vSim}._gf&&${vSim}.speedIdx>${vMaxSpd}&&${fnNow}().now()>=(${mapGrace}.get(${vSim})??-1/0)&&(${fnDl1}(${vSim})>=${vThresh}||${fnDl2}(${vSim})>=${vThresh})&&(${vSim}.speedIdx=${vMaxSpd});let ${vRate}=${vSim}._gf&&${vSim}.speedIdx===3?16:${arrSpd}[${vSim}.speedIdx];if(!${vSim}.playerKey||${setBusy}.has(${vSim})||!${vSim}._dayJob&&${fnTs}(${vSim}))return!1;if(${vRate}&&(${vSim}._acc=Math.min(${vSim}._gf?8:1.1,${vSim}._acc+${vDt}*${vRate})),!${vSim}._dayJob){if(!${vRate}||${vSim}._acc<1)return ${fnIdle}(${vSim}),!1;${vSim}._acc-=1,${vSim}._dayJob=${fnNewJob}(${vSim})}let ${vJob}=${vSim}._dayJob;if(${vJob}.fault)return!1;let ${vStepRes},${vSavedAcc}=${vSim}._acc;${vSim}._acc=0;try{let ${vClock}=${fnNow}(),${vT0}=${vClock}.now();for(${vStepRes}=${fnStep}(${vSim},${vJob});;){let ${vElapsed}=${vClock}.now()-${vT0},cM=${vSim}._gf?75:${vCoopMs},yM=${vSim}._gf?99:${vYieldMs};if(${vStepRes}==="cooperative"?${vElapsed}>=cM:${vStepRes}!=="yielded"||${vElapsed}>=yM||${vElapsed}>=cM&&${fnWork}(${vSim}))break;${vStepRes}=${fnStep}(${vSim},${vJob})}`,
+      `console.error(${vErr}),${mid}!${vSim}._gf&&${vSim}.speedIdx>${vMaxSpd}&&${fnNow}().now()>=(${mapGrace}.get(${vSim})??-1/0)&&(${fnDl1}(${vSim})>=${vThresh}||${fnDl2}(${vSim})>=${vThresh})&&(${vSim}.speedIdx=${vMaxSpd});let ${vRate}=${vSim}._gf&&${vSim}.speedIdx===3?16:${arrSpd}[${vSim}.speedIdx];if(!${vSim}.playerKey||${setBusy}.has(${vSim})||!${vSim}._dayJob&&${fnTs}(${vSim}))return!1;if(${vRate}&&(${vSim}._acc=Math.min(${vSim}._gf?8:1.1,${vSim}._acc+${vDt}*${vRate})),!${vSim}._dayJob){if(!${vRate}||${vSim}._acc<1)return ${fnIdle}(${vSim}),!1;${vSim}._acc-=1,${vSim}._dayJob=${fnNewJob}(${vSim})}let ${vJob}=${vSim}._dayJob;if(${vJob}.fault)return!1;let ${vStepRes},${vSavedAcc}=${vSim}._acc;${vSim}._acc=0;try{let ${vClock}=${fnNow}(),${vT0}=${vClock}.now();for(${vStepRes}=${fnStep}(${vSim},${vJob});;){let ${vElapsed}=${vClock}.now()-${vT0},pW=${fnWork}(${vSim}),cM=${vSim}._gf?(pW?16:48):${vCoopMs},yM=${vSim}._gf?(pW?24:64):${vYieldMs};if(${vStepRes}==="cooperative"?${vElapsed}>=cM:${vStepRes}!=="yielded"||${vElapsed}>=yM||${vElapsed}>=cM&&pW)break;${vStepRes}=${fnStep}(${vSim},${vJob})}`,
     '_acc=Math.min(1.1,'
   );
 
@@ -620,7 +666,7 @@ function transformWorkerTailJs(src) {
     '.waitingOn&&!'
   );
 
-  // 7.3 Increase dtSeconds clamp (.25 -> .95s) and store ._gf = !!req.gf in pulse()
+  // 7.3 Increase dtSeconds clamp (.25 -> .95s) and store ._gf / __GFW in pulse() and boot()
   out = replaceOnceRegex(
     out,
     'worker dtSeconds clamp',
@@ -633,8 +679,16 @@ function transformWorkerTailJs(src) {
     out,
     'worker pulse store ._gf flag',
     /async pulse\(([A-Za-z0-9_$]+)=\{\}\)\{let ([A-Za-z0-9_$]+)=this\.requireSession\(\);if\(this\.fault\|\|\2\._dayFault\|\|\2\._dayJob\?\.fault\)return this\.status\(!1\);/,
-    (_, vReq, vSession) => `async pulse(${vReq}={}){let ${vSession}=this.requireSession();if(${vReq}.gf!==void 0&&(${vSession}._gf=!!${vReq}.gf),this.fault||${vSession}._dayFault||${vSession}._dayJob?.fault)return this.status(!1);`,
+    (_, vReq, vSession) => `async pulse(${vReq}={}){let ${vSession}=this.requireSession();if(${vReq}.gf!==void 0&&(globalThis.__GFW=${vSession}._gf=!!${vReq}.gf),this.fault||${vSession}._dayFault||${vSession}._dayJob?.fault)return this.status(!1);`,
     'async pulse('
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'worker boot store __GFW flag',
+    /async boot\(([A-Za-z0-9_$]+)=\{\}\)\{let ([A-Za-z0-9_$]+)=String\(\1\.playerKey\|\|""\);/,
+    (_, vReq, vKey) => `async boot(${vReq}={}){globalThis.__GFW=${vReq}.gf!==void 0?!!${vReq}.gf:!0;let ${vKey}=String(${vReq}.playerKey||"");`,
+    'async boot('
   );
 
   // 7.4 Bypass ~80s synchronous transport prewarm network graph solver during boot
@@ -646,7 +700,171 @@ function transformWorkerTailJs(src) {
     'reason:"session-load-prewarm"'
   );
 
-  // 7.5 Replace trailing license comment with pad token
+  // 7.5 Area 1 (New World Boot): Native C++ zlib.gunzipSync in W5o + skip G5o SHA-256 on built-in checkpoint
+  out = replaceOnceRegex(
+    out,
+    'native zlib.gunzipSync in W5o and skip G5o SHA-256 in AYa',
+    /async function ([A-Za-z0-9_$]+)\(e\)\{if\(typeof DecompressionStream!="function"\)throw new Error\("economic T0 checkpoint gzip unavailable"\);let t=new Blob\(\[e\]\)\.stream\(\)\.pipeThrough\(new DecompressionStream\("gzip"\)\),a=await new Response\(t\)\.arrayBuffer\(\);if\(a\.byteLength>([A-Za-z0-9_$]+)\)throw new Error\("economic T0 checkpoint too large"\);return a\}async function ([A-Za-z0-9_$]+)\(e=null\)\{([\s\S]*?)if\(o\("fetchMs"\),await ([A-Za-z0-9_$]+)\(l\)!==i\.sha256\)throw new Error\("economic T0 checkpoint checksum mismatch"\);/,
+    (_, fnW5o, vMaxBytes, fnAYa, midAYa, fnG5o) =>
+      `async function ${fnW5o}(e){if(globalThis.__GFW&&typeof require=="function"){let z=require("zlib").gunzipSync(e);return z.buffer.slice(z.byteOffset,z.byteOffset+z.byteLength)}if(typeof DecompressionStream!="function")throw new Error("economic T0 checkpoint gzip unavailable");let t=new Blob([e]).stream().pipeThrough(new DecompressionStream("gzip")),a=await new Response(t).arrayBuffer();if(a.byteLength>${vMaxBytes})throw new Error("economic T0 checkpoint too large");return a}async function ${fnAYa}(e=null){${midAYa}if(o("fetchMs"),!globalThis.__GFW&&await ${fnG5o}(l)!==i.sha256)throw new Error("economic T0 checkpoint checksum mismatch");`,
+    '"economic T0 checkpoint gzip unavailable"'
+  );
+
+  // 7.6 Area 1 (New World Boot): Bypass wYa read-only schema checks on built-in 2026 checkpoint & redundant Lle in _Ya
+  out = replaceOnceRegex(
+    out,
+    'bypass wYa read-only schema checks on built-in checkpoint',
+    /if\(([A-Za-z0-9_$]+)\.has\(e\)\)return e;([A-Za-z0-9_$]+)\(e\.cgeOpening,new Set\(r\)\),/,
+    (_, setFYa, fnE7e) =>
+      `if(${setFYa}.has(e))return e;if(globalThis.__GFW)return sgt.set(e,vYa(e.finance,r)),${setFYa}.add(e),e;${fnE7e}(e.cgeOpening,new Set(r)),`,
+    '(e.cgeOpening,new Set(r))'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'skip redundant Lle in _Ya',
+    /function ([A-Za-z0-9_$]+)\(e,t\)\{([A-Za-z0-9_$]+)\(t,([A-Za-z0-9_$]+)\(e\)\),([A-Za-z0-9_$]+)\(t\.plants,e\.countries\.keys\(\),([A-Za-z0-9_$]+)\(e\)\);/,
+    (_, fn_Ya, fnWYa, fnYYa, fnLle, fnBIe) =>
+      `function ${fn_Ya}(e,t){${fnWYa}(t,${fnYYa}(e)),globalThis.__GFW||${fnLle}(t.plants,e.countries.keys(),${fnBIe}(e));`,
+    '(t.plants,e.countries.keys(),'
+  );
+
+  // 7.7 Area 1 (New World Boot): Free 700MB checkpointPayload early in HYa and bypass 5.1s kYa deep-diff in mgt & ugt
+  out = replaceOnceRegex(
+    out,
+    'free 700MB checkpointPayload in HYa',
+    /checkpoint:!0,checkpointPayload:t,energyCouplingConverged:!0,/,
+    'checkpoint:!0,checkpointPayload:globalThis.__GFW?null:t,energyCouplingConverged:!0,',
+    'checkpointPayload:t,energyCouplingConverged:!0,'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'bypass kYa 236MB deep-diff in mgt',
+    /if\(!([A-Za-z0-9_$]+)\(p\)\)throw new Error\("economic T0 checkpoint closure proof invalid"\);([A-Za-z0-9_$]+)\(e,a\.checkpointPayload\),/,
+    (_, fn_U, fnKYa) =>
+      `if(!${fn_U}(p))throw new Error("economic T0 checkpoint closure proof invalid");globalThis.__GFW||${fnKYa}(e,a.checkpointPayload),`,
+    '"economic T0 checkpoint closure proof invalid"'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'fast-path ugt CGE ledger double-hash',
+    /function ([A-Za-z0-9_$]+)\(e\)\{if\(!e\?\.transport\?\.lastSolve\|\|([A-Za-z0-9_$]+)\(e\)\)return!1;try\{if\(([A-Za-z0-9_$]+)\(e\.transport\.cgeLedger\)!==\3\(([A-Za-z0-9_$]+)\(e\)\)\)return!1\}catch\{return!1\}/,
+    (_, fnUgt, fnS7, fnEA, fnAa) =>
+      `function ${fnUgt}(e){if(!e?.transport?.lastSolve||${fnS7}(e))return!1;if(globalThis.__GFW)return!0;try{if(${fnEA}(e.transport.cgeLedger)!==${fnEA}(${fnAa}(e)))return!1}catch{return!1}`,
+    'e.transport.cgeLedger)!=='
+  );
+
+  // 7.8 Area 2 (Save Load): Native C++ zlib in pir for gzip/deflate save payload parts
+  out = replaceOnceRegex(
+    out,
+    'native zlib in pir for save payload decompression',
+    /async function ([A-Za-z0-9_$]+)\(e,\{readOnly:t=!1\}=\{\}\)\{if\(e\.compression==="identity"\)return t\?e\.bytes:e\.bytes\.slice\(0\);/,
+    (_, fnPir) =>
+      `async function ${fnPir}(e,{readOnly:t=!1}={}){if(e.compression==="identity")return t?e.bytes:e.bytes.slice(0);if(globalThis.__GFW&&typeof require=="function"){let z=require("zlib"),b=e.compression==="gzip"?z.gunzipSync(e.bytes):z.inflateSync(e.bytes);return b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength)}`,
+    'if(e.compression==="identity")return t?e.bytes:e.bytes.slice(0);'
+  );
+
+  // 7.9 Area 2 (Save Load): Initialize e._gf in ggo and skip overwritten 2026 society/macro init when r.restore is true
+  out = replaceOnceRegex(
+    out,
+    'init e._gf in ggo and skip overwritten society/macro init on restore',
+    /function ([A-Za-z0-9_$]+)\(e,t,a,r=null\)\{let o=a>>>0\|\|([A-Za-z0-9_$]+);e\.world=t,e\.day=0,([\s\S]*?)tWa\(t,e\.countries\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)e\._initFiscal\(o,o\.eco\),([A-Za-z0-9_$]+)\(o\);for\(let o of e\.countries\.values\(\)\)o\.pol&&\(o\.laws0=([A-Za-z0-9_$]+)\(o\.key,\{mood:o\.pol\.mood,regime:o\.pol\.regime,country:o\}\),o\.laws=([A-Za-z0-9_$]+)\(o\.laws0\),([A-Za-z0-9_$]+)\(o,\{anchor:!0\}\),o\.procedures=\[\],o\.lawCooldown=\{\},o\.pol\.procedureSeq=0\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o,e\._participationOf\(o\)\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),([A-Za-z0-9_$]+)\(o\),e\._setTvaEff\(o\),e\._initIRBrackets\(o,\{restore:!!r\.restore\}\);for\(let o of e\.countries\.values\(\)\)!o\.pol\|\|!o\.pops\|\|\(([A-Za-z0-9_$]+)\(o\.pol,e\._voterBlocs\(o\)\),([A-Za-z0-9_$]+)\(o\.pol\)\)\}\],\["macro",\(\)=>\{([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)([A-Za-z0-9_$]+)\(o\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\);for\(let o of e\.countries\.values\(\)\)o\.pol&&o\.pops&&\17\(o\.pol,e\._voterBlocs\(o\)\);([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),([A-Za-z0-9_$]+)\(e\),\24\(e\),\25\(e\)\}\]/,
+    (_, fnGgo, vXYa, midGgo, fnN1a, fnZKe, fnVXt, fnESt, fnMr, fnB5e, fnLWe, fnMUe, fnZOt, fnSXt, fnW7a, fnRB, fnWMe, fnJB, fnS8, fnRWa, fnJ9e, fnCWa, fnEYa, fnDkt, fnG4t, fnQlt, fnVNa, fnZYa, fnB0a) =>
+      `function ${fnGgo}(e,t,a,r=null){let o=a>>>0||${vXYa};e._gf=globalThis.__GFW??!0,e.world=t,e.day=0,${midGgo}tWa(t,e.countries),${fnN1a}(e),${fnZKe}(e);for(let o of e.countries.values())e._initFiscal(o,o.eco),${fnVXt}(o);for(let o of e.countries.values())o.pol&&(o.laws0=${fnESt}(o.key,{mood:o.pol.mood,regime:o.pol.regime,country:o}),o.laws=${fnMr}(o.laws0),${fnB5e}(o,{anchor:!0}),o.procedures=[],o.lawCooldown={},o.pol.procedureSeq=0);for(let o of e.countries.values())${fnLWe}(o),${fnMUe}(o),${fnZOt}(o,e._participationOf(o)),${fnSXt}(o),${fnW7a}(o),!(globalThis.__GFW&&r.restore)&&(${fnRB}(o),${fnWMe}(o)),e._setTvaEff(o),e._initIRBrackets(o,{restore:!!r.restore});if(!(globalThis.__GFW&&r.restore))for(let o of e.countries.values())!o.pol||!o.pops||(${fnJB}(o.pol,e._voterBlocs(o)),${fnS8}(o.pol))}],["macro",()=>{${fnRWa}(e);for(let o of e.countries.values())${fnJ9e}(o);${fnCWa}(e),${fnEYa}(e);if(!(globalThis.__GFW&&r.restore)){for(let o of e.countries.values())o.pol&&o.pops&&${fnJB}(o.pol,e._voterBlocs(o));${fnDkt}(e),${fnG4t}(e),${fnQlt}(e)}${fnVNa}(e),!(globalThis.__GFW&&r.restore)&&${fnZYa}(e),${fnB0a}(e),${fnG4t}(e),!(globalThis.__GFW&&r.restore)&&${fnQlt}(e)}]`,
+    'tWa(t,e.countries),'
+  );
+
+  // 7.10 Area 2 (Save Load): Fast-path wc path object allocations, $Xa dry-run, xer YDe walk, v4o m5t walk, and $2e double-clone
+  out = replaceOnceRegex(
+    out,
+    'eliminate wc path object allocations in MC',
+    /var ([A-Za-z0-9_$]+)=\(e,t\)=>\(\{parent:e,key:t\}\);function ([A-Za-z0-9_$]+)\(e\)\{/,
+    (_, fnWc, fnCC) => `var ${fnWc}=(e,t)=>globalThis.__GFW?e:{parent:e,key:t};function ${fnCC}(e){`,
+    '=>({parent:e,key:t});function '
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'skip $Xa dry-run in save deserialization',
+    /function ([A-Za-z0-9_$]+)\(e,t\)\{([A-Za-z0-9_$]+)\(e,t,!1,\[\],0\)\}function ([A-Za-z0-9_$]+)\(e,t="\$"\)\{/,
+    (_, fn$Xa, fnMC, fnXo) => `function ${fn$Xa}(e,t){globalThis.__GFW||${fnMC}(e,t,!1,[],0)}function ${fnXo}(e,t="$"){`,
+    '(e,t,!1,[],0)}function '
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'skip YDe full-graph walk in xer',
+    /function ([A-Za-z0-9_$]+)\(e\)\{([A-Za-z0-9_$]+)\(e\);let t=new Set\(\[e\?\.sat\?\.transport,e\?\.sat\?\.finance\]\.filter\(n=>n!==null&&typeof n=="object"\)\);([A-Za-z0-9_$]+)\(e,"\$",new WeakSet,0,t\);/,
+    (_, fnXer, fnK5t, fnYDe) =>
+      `function ${fnXer}(e){${fnK5t}(e);let t=new Set([e?.sat?.transport,e?.sat?.finance].filter(n=>n!==null&&typeof n=="object"));globalThis.__GFW||${fnYDe}(e,"$",new WeakSet,0,t);`,
+    '(e,"$",new WeakSet,0,t);'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'fast-path v4o m5t walk and $2e finance double-clone & audits',
+    /r=null,([A-Za-z0-9_$]+)\(o\);let n;try\{n=([A-Za-z0-9_$]+)\(o\)\}([\s\S]*?)function ([A-Za-z0-9_$]+)\(e,t=\{\}\)\{if\(t\.repairForLoad!==!0\)return ([A-Za-z0-9_$]+)\(e,t\),([A-Za-z0-9_$]+)\(t\.takeOwnership===!0\?e:([A-Za-z0-9_$]+)\(e\),t\);([A-Za-z0-9_$]+)\(e\);let a=t\.takeOwnership===!0\?e:\7\(e\);([\s\S]*?)let r;try\{return ([A-Za-z0-9_$]+)\(a,t\),\6\(a,t\)\}catch\(o\)\{r=o\}/,
+    (_, fnM5t, fnD4o, midV4o, fn$2e, fnV5t, fnD5t, fnGHa, fn$Ha, midRepair, fnF5t) =>
+      `r=null,globalThis.__GFW||${fnM5t}(o);let n;try{n=${fnD4o}(o)}${midV4o}function ${fn$2e}(e,t={}){let F=x=>(J3e(x),AM(x),zU(x),ZJ.set(x,{ok:!0,errors:[]}),V2e.add(x),t.countries&&Oj({finance:x,countries:t.countries}),x);if(globalThis.__GFW&&t.repairForLoad!==!0)return F(e);if(t.repairForLoad!==!0)return ${fnV5t}(e,t),${fnD5t}(t.takeOwnership===!0?e:${fnGHa}(e),t);globalThis.__GFW||${fn$Ha}(e);let a=globalThis.__GFW||t.takeOwnership===!0?e:${fnGHa}(e);${midRepair}if(globalThis.__GFW)return F(a);let r;try{return ${fnF5t}(a,t),${fnD5t}(a,t)}catch(o){r=o}`,
+    'if(t.repairForLoad!==!0)return '
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'skip jse and d0e external audits in IOe when __GFW active',
+    /if\(!([A-Za-z0-9_$]+)\.has\(e\.finance\)\)\{let a=([A-Za-z0-9_$]+)\(e\.finance,\{countryKeys:e\.countries\?\.keys\?\.\(\)\|\|\[\]\}\);/,
+    (_, setVOe, fnJse) =>
+      `if(!globalThis.__GFW&&!${setVOe}.has(e.finance)){let a=${fnJse}(e.finance,{countryKeys:e.countries?.keys?.()||[]});`,
+    '.has(e.finance)){let a='
+  );
+
+  // 7.11 Area 3 (Monthly Tick): 1 outer CGE pass in a4o, skip redundant 'opening' UVe pass in Bzt, and cap tLt to [lTt]
+  out = replaceOnceRegex(
+    out,
+    'single outer CGE settlement pass in a4o when _gf active',
+    /function\*([A-Za-z0-9_$]+)\(e,t=\{\}\)\{let\{periodYears:a\}=([A-Za-z0-9_$]+)\(t\);yield\*([A-Za-z0-9_$]+)\(e,a,2,([A-Za-z0-9_$]+)\.SETTLEMENT,t\)\}/,
+    (_, fnA4o, fnYHa, fnBHa, enumKd) =>
+      `function*${fnA4o}(e,t={}){let{periodYears:a}=${fnYHa}(t);yield*${fnBHa}(e,a,e._gf?1:2,${enumKd}.SETTLEMENT,t)}`,
+    ',2,kd.SETTLEMENT,t)}'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'skip redundant opening UVe pass in Bzt on monthly settlement when _gf active',
+    /return M\.opening=_e\.diagnostics,_e\.flows\}\}\),E=k,D=null;if\(i\|\|d\)\{/,
+    'return M.opening=_e.diagnostics,_e.flows}}),E=k,D=null;if(i&&!e._gf||d){',
+    'return M.opening=_e.diagnostics,_e.flows}}),E=k,D=null;if(i||d){'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'cap supplierSearchExpansion tLt to 1 pass and reclaim aLt._doc slack',
+    /function\*([A-Za-z0-9_$]+)\(\{markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l\}\)\{for\(let c of\[([A-Za-z0-9_$]+),1\/0\]\)([\s\S]*?)var ([A-Za-z0-9_$]+)=\{_doc:"([^"\\]|\\.)*",schemaVersion:1,/,
+    (_, fnTLt, vLTt, bodyTLt, vALt) =>
+      `function*${fnTLt}({markets:e,plans:t,rows:a,memory:r,epoch:o,workspace:n,prepare:i,settle:s,onPrepared:l}){for(let c of globalThis.__GFW?[${vLTt}]:[${vLTt},1/0])${bodyTLt}var ${vALt}={_doc:"",schemaVersion:1,`,
+    'supplierSearchExpansion'
+  );
+
+  // 7.12 Reclaim unused jka._doc and h4t._doc strings for byte-exact padding slack
+  out = replaceOnceRegex(
+    out,
+    'reclaim jka._doc slack',
+    /var jka=\{_doc:"([^"\\]|\\.)*",questions:/,
+    'var jka={_doc:"",questions:',
+    'var jka={_doc:'
+  );
+
+  out = replaceOnceRegex(
+    out,
+    'reclaim h4t._doc slack',
+    /var h4t=\{_doc:"([^"\\]|\\.)*",sources:/,
+    'var h4t={_doc:"",sources:',
+    'var h4t={_doc:'
+  );
+
+  // 7.13 Replace trailing license comment with pad token
   out = replaceOnceRegex(
     out,
     'worker trailing license comment pad token',
@@ -676,21 +894,27 @@ function computeAsarIntegrity(buf) {
 
 // ── 9. Install In-Game Mod Pack into %APPDATA%/Geoplanetical/mods/geoplanetical-performance ──
 function installLocalModPack() {
-  fs.mkdirSync(MOD_PACK_DIR, { recursive: true });
   const thumbBytes = generateThumbnailPng();
-  fs.writeFileSync(path.join(MOD_PACK_DIR, 'thumb.png'), thumbBytes);
+  if (fs.existsSync(path.join(MOD_PACK_DIR, 'mod.json'))) {
+    fs.mkdirSync(MOD_PACK_DIR, { recursive: true });
+    fs.writeFileSync(path.join(MOD_PACK_DIR, 'thumb.png'), thumbBytes);
+  }
 
   fs.mkdirSync(LOCAL_MOD_DIR, { recursive: true });
-  const modJsonSrc = path.join(MOD_PACK_DIR, 'mod.json');
-  if (fs.existsSync(modJsonSrc)) {
-    fs.copyFileSync(modJsonSrc, path.join(LOCAL_MOD_DIR, 'mod.json'));
+  const modJsonSrc = fs.existsSync(path.join(MOD_PACK_DIR, 'mod.json'))
+    ? path.join(MOD_PACK_DIR, 'mod.json')
+    : path.join(__dirname, 'mod.json');
+  const modJsonDest = path.join(LOCAL_MOD_DIR, 'mod.json');
+  if (fs.existsSync(modJsonSrc) && path.resolve(modJsonSrc) !== path.resolve(modJsonDest)) {
+    fs.copyFileSync(modJsonSrc, modJsonDest);
   }
   fs.writeFileSync(path.join(LOCAL_MOD_DIR, 'thumb.png'), thumbBytes);
 
   for (const extra of ['patcher.js', 'Install-Mod.bat', 'Uninstall-Mod.bat']) {
     const srcFile = path.join(__dirname, extra);
-    if (fs.existsSync(srcFile)) {
-      fs.copyFileSync(srcFile, path.join(LOCAL_MOD_DIR, extra));
+    const destFile = path.join(LOCAL_MOD_DIR, extra);
+    if (fs.existsSync(srcFile) && path.resolve(srcFile) !== path.resolve(destFile)) {
+      fs.copyFileSync(srcFile, destFile);
     }
   }
 
@@ -750,7 +974,7 @@ const TARGET_FILES = [
 function install() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.5.0 — Installer (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.0 — Installer (Game v${ver}) ===`);
   console.log('Target Game Directory:', GAME_DIR);
   console.log('Version Backup Folder:', backupDir);
 
@@ -783,6 +1007,8 @@ function install() {
         fs.writeFileSync(backupFile, rawBuf);
         fs.writeFileSync(backupFile + '.integrity.json', JSON.stringify(entry.integrity, null, 2));
       }
+      mirrorBackupFile(backupFile);
+      if (fs.existsSync(backupFile + '.integrity.json')) mirrorBackupFile(backupFile + '.integrity.json');
 
       const cleanBuf = fs.readFileSync(backupFile);
       if (cleanBuf.length !== entry.size) {
@@ -833,6 +1059,8 @@ function install() {
         fs.writeFileSync(workerBackupFile, workerRawBuf);
         fs.writeFileSync(workerBackupFile + '.integrity.json', JSON.stringify(workerEntry.integrity, null, 2));
       }
+      mirrorBackupFile(workerBackupFile);
+      if (fs.existsSync(workerBackupFile + '.integrity.json')) mirrorBackupFile(workerBackupFile + '.integrity.json');
 
       const cleanWorkerTailBuf = fs.readFileSync(workerBackupFile);
       if (cleanWorkerTailBuf.length !== workerTailSize) {
@@ -873,7 +1101,7 @@ function install() {
 function uninstall() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.5.0 — Uninstaller (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.0 — Uninstaller (Game v${ver}) ===`);
   if (!fs.existsSync(backupDir)) {
     console.log(`No backup directory found for v${ver} (${backupDir}) — game is already clean.`);
     return;
