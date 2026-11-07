@@ -1,0 +1,13 @@
+{
+  "id": "geoplanetical-performance",
+  "version": "v1.4.0 — FPS Booster + 16x Turbo (Game 1.0.9)",
+  "contentApi": 1,
+  "tier": "presentation",
+  "name": "Geoplanetical Fire Performance Mod",
+  "description": "Made this mod for my laptop (8GB RAM / integrated graphics) to get playable FPS and make Speed 3 actually fast, but it works on high-end PCs too!\n\nWHAT IT DOES:\n- Massive FPS boost (removes heavy 8K textures, 3D clouds/atmosphere lag, and UI blur)\n- Turbo Speed 3 (>>> runs way faster at ~16 days/sec, and the date counter keeps ticking smoothly)\n- Press F10 in-game anytime to switch between FIRE mode and normal Vanilla graphics/speed\n\nHOW TO INSTALL (1-Time Setup):\nBecause Steam Workshop only loads flags/images by default, you need to run the installer once so it can patch the game engine:\n1. Close Geoplanetical.\n2. Go to your Steam Workshop folder for this mod:\n   Steam\\steamapps\\workshop\\content\\940230\\<mod folder>\n   (Or right-click Geoplanetical in Steam -> Manage -> Browse local files, then go up to steamapps\\workshop\\content\\940230)\n3. Double-click Install-Mod.bat and wait a few seconds until it says Done.\n4. Start the game! You will see 'FIRE [F10]' and your FPS in the top-right corner.\n\nHOW TO UNINSTALL / TURN OFF:\n- Press F10 in-game, or turn the mod off in the Mods menu to go back to normal vanilla.\n- Or run Uninstall-Mod.bat in the folder to restore the original files.\n\nUPDATE v1.4.0:\n- Updated for Game v1.0.9\n- Fixed the \"'node' is not recognized\" error in Install-Mod.bat (you do NOT need Node.js installed anymore!)",
+  "authors": [
+    "jajang"
+  ],
+  "thumbnail": "thumb.png",
+  "provides": {}
+}

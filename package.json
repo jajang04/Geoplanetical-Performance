@@ -1,0 +1,14 @@
+{
+  "name": "geoplanetical-performance",
+  "version": "1.4.0",
+  "description": "FPS booster and Turbo Speed 3 mod for Geoplanetical",
+  "main": "patcher.js",
+  "scripts": {
+    "install-mod": "node patcher.js install",
+    "uninstall-mod": "node patcher.js uninstall",
+    "status": "node patcher.js status",
+    "test": "node test.js"
+  },
+  "author": "jajang",
+  "license": "MIT"
+}
