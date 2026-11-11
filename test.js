@@ -21,7 +21,7 @@ const {
 const ver = detectGameVersion();
 const BACKUP_DIR = getBackupDir();
 
-console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.0 Verification Suite (Game v${ver}) ===\n`);
+console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.1 Verification Suite (Game v${ver}) ===\n`);
 
 // Helper to read raw file & header entry from ASAR
 function readFromAsar(relPath) {
@@ -77,7 +77,9 @@ assert(bundlePatched.includes('__GFTOAST'), 'app.bundle.js contains screen toast
 assert(bundlePatched.includes('subscribeView(t,a={},n=!0)'), 'app.bundle.js contains Month-End UI Browsing cache adapter');
 assert(bundlePatched.includes('r?.pending?this.views.get(t):null'), 'app.bundle.js provides pending cached view snapshot during month-end');
 assert(bundlePatched.includes('.BOOT,{...t,gf:__GFM("turbo")},'), 'app.bundle.js passes gf flag during session.boot');
-assert(bundlePatched.includes('__GFM()||await ') && bundlePatched.includes('.request("session-switch")'), 'app.bundle.js skips blocking session-switch autosave on in-game save load');
+if (bundleOrig.includes('.request("session-switch")')) {
+  assert(bundlePatched.includes('__GFM()||await ') && bundlePatched.includes('.request("session-switch")'), 'app.bundle.js skips blocking session-switch autosave on in-game save load');
+}
 assert(bundlePatched.includes('__GFM()||c||await Promise.race([l,'), 'app.bundle.js auto-bypasses 25s intro narrator stall');
 assert(bundlePatched.includes('.prepareNationLabels({loadingScreen:!__GFM()})'), 'app.bundle.js performs non-blocking nation label baking in background');
 assert(bundlePatched.includes("contain:layout paint!important"), 'app.bundle.js enforces CSS layout containment on UI panels');
@@ -187,4 +189,4 @@ if (fs.existsSync(flagsPath)) {
   console.log('✔ [Test 5] Vanilla V8 utilityProcess heap limit preserved in simulation-runtime-flags.js (no RAM paging)');
 }
 
-console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.0 is ready.');
+console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.1 is ready.');

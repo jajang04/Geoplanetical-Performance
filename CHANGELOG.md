@@ -4,6 +4,15 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 
 ---
 
+## [v1.6.1] — 2026-11-11
+
+### Fixed (Game v1.1.2 Compatibility)
+- **Updated Renderer Patch Hooks for Official Game Update v1.1.2**:
+  - **Root Cause**: Geoplanetical v1.1.2 updated `_initThree` (added an explicit `e._quality !== "performance"` antialiasing guard), updated `shouldDraw()` with a settled/active threshold (`a ? .1 : .025`), replaced the blocking `session-switch` IPC autosave with a clean reload flow (`Rwe` / `location.reload()`), and rotated minified variable names on nation label mesh creation (`this._nlGroup.add(M)`).
+  - **Fix & Benefit**: Updated [patcher.js](file:///c:/server/ETC/Geoplanetical-Performance/patcher.js) and [test.js](file:///c:/server/ETC/Geoplanetical-Performance/test.js) to support both **v1.1.2** and **v1.1.0** cleanly with exact byte-length padding, while preserving all new native v1.1.2 physical-core detection (`machine-cores.js`), per-minute render health telemetry (`diag:perf`), and clean reload save-switching.
+
+---
+
 ## [v1.6.0] — 2026-11-07
 
 ### Added & Fixed
