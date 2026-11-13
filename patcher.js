@@ -15,6 +15,8 @@ function resolveGameDir() {
     process.env.GEO_GAME_DIR,
     // Relative path when running inside steamapps/workshop/content/4137120/<itemId>/
     path.resolve(__dirname, '..', '..', '..', '..', 'common', 'Geoplanetical'),
+    __dirname,
+    path.resolve(__dirname, '..'),
     'C:\\Program Files (x86)\\Steam\\steamapps\\common\\Geoplanetical',
     'C:\\Program Files\\Steam\\steamapps\\common\\Geoplanetical',
     'D:\\SteamLibrary\\steamapps\\common\\Geoplanetical',

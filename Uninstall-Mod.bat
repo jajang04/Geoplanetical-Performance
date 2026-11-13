@@ -21,7 +21,7 @@ echo [Info] Standalone Node.js not found in PATH — using Geoplanetical's built
 powershell -NoProfile -ExecutionPolicy Bypass -Command ^
   "$ErrorActionPreference = 'Stop'; " ^
   "$dir = $env:GEO_MOD_DIR.TrimEnd('\'); " ^
-  "$cands = @([IO.Path]::GetFullPath((Join-Path $dir '..\..\..\..\common\Geoplanetical')), 'C:\Program Files (x86)\Steam\steamapps\common\Geoplanetical', 'C:\Program Files\Steam\steamapps\common\Geoplanetical', 'D:\SteamLibrary\steamapps\common\Geoplanetical', 'E:\SteamLibrary\steamapps\common\Geoplanetical', 'F:\SteamLibrary\steamapps\common\Geoplanetical'); " ^
+  "$cands = @([IO.Path]::GetFullPath((Join-Path $dir '..\..\..\..\common\Geoplanetical')), $dir, [IO.Path]::GetFullPath((Join-Path $dir '..')), 'C:\Program Files (x86)\Steam\steamapps\common\Geoplanetical', 'C:\Program Files\Steam\steamapps\common\Geoplanetical', 'D:\SteamLibrary\steamapps\common\Geoplanetical', 'E:\SteamLibrary\steamapps\common\Geoplanetical', 'F:\SteamLibrary\steamapps\common\Geoplanetical'); " ^
   "try { $sp = (Get-ItemProperty 'HKCU:\Software\Valve\Steam' -ErrorAction Stop).SteamPath.Replace('/','\'); $cands += (Join-Path $sp 'steamapps\common\Geoplanetical'); $vdf = Join-Path $sp 'steamapps\libraryfolders.vdf'; if (Test-Path $vdf) { Select-String -Path $vdf -Pattern '\x22path\x22\s+\x22([^\x22]+)\x22' -AllMatches | ForEach-Object { $_.Matches } | ForEach-Object { $cands += (Join-Path ($_.Groups[1].Value -replace '\\\\','\') 'steamapps\common\Geoplanetical') } } } catch {}; " ^
   "$gameDir = $cands | Where-Object { $_ -and (Test-Path (Join-Path $_ 'Geoplanetical.exe')) } | Select-Object -First 1; " ^
   "if (-not $gameDir) { Write-Error 'Could not locate Geoplanetical installation directory.'; exit 1 }; " ^
