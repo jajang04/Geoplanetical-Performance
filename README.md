@@ -66,6 +66,25 @@ A surgical, conflict-free performance optimization engine for **Geoplanetical**,
 
 ---
 
+## 🔄 How to Update the Mod
+
+Whenever a new mod version is released, or whenever the official game receives an update on Steam:
+
+### For Steam Workshop Users:
+1. Steam will automatically download the updated Workshop files.
+2. Navigate to your Workshop content folder:  
+   `steamapps\workshop\content\4137120\3834097787\`
+3. Double-click **`Install-Mod.bat`** once to apply the updated patch to the new game version.
+4. Launch the game!
+
+### For Standalone / Non-Steam Users:
+1. Download the latest **`Geoplanetical-Fire-Performance-Mod-vX.X.X.zip`** from the [GitHub Releases](https://github.com/jajang04/Geoplanetical-Performance/releases) page.
+2. Extract and replace the files in your mod directory.
+3. Double-click **`Install-Mod.bat`** to re-patch and synchronize your game engine.
+4. Launch `Geoplanetical.exe`!
+
+---
+
 ## 🔄 How to Uninstall
 
 To revert your game back to 100% clean vanilla files:
