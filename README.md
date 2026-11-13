@@ -1,7 +1,7 @@
 # Geoplanetical Fire Performance Mod 🔥
 
-[![Game Version](https://img.shields.io/badge/Game-v1.1.2-blue.svg)](https://store.steampowered.com/app/940230/Geoplanetical/)
-[![Mod Version](https://img.shields.io/badge/Mod-v1.6.2-orange.svg)](https://github.com/jajang04/Geoplanetical-Performance/releases)
+[![Game Version](https://img.shields.io/badge/Game-v1.1.3-blue.svg)](https://store.steampowered.com/app/940230/Geoplanetical/)
+[![Mod Version](https://img.shields.io/badge/Mod-v1.6.3-orange.svg)](https://github.com/jajang04/Geoplanetical-Performance/releases)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tested On](https://img.shields.io/badge/Tested%20On-8GB%20RAM%20%2F%20Iris%20Xe-success.svg)](#hardware-targets)
 
@@ -14,7 +14,7 @@ A surgical, conflict-free performance optimization engine for **Geoplanetical**,
 * **Smooth 60 FPS Graphics Boost:** Replaces heavy 8K globe textures and unlit atmospheric passes with lightweight 2K shaders and removes heavy CSS UI compositor backdrop blurs (`backdrop-filter: blur`).
 * **Fast New Game Boot:** Skips redundant prewarm pathfinding and the 25-second intro narrator hold, baking nation atlas labels asynchronously.
 * **Month-End UI Browsing:** Browse diplomacy, economy, and budget tabs smoothly during heavy month-end simulation ticks without the UI freezing.
-* **Zero Simulation Conflicts:** 100% preserves the official v1.1.2 economic solver (CGE matrix trade settlement, double-entry banking ledger, puppet states, and country AI).
+* **Zero Simulation Conflicts:** 100% preserves the official v1.1.3 economic solver (CGE matrix trade settlement, double-entry banking ledger, puppet states, and country AI).
 * **Zero RAM Thrashing:** Protects V8 heap limits on 8GB RAM systems to prevent Windows from swapping memory to disk.
 * **Live In-Game Toggle (F10):** Press **`F10`** anytime while playing to instantly toggle Fire Graphics ON/OFF with a floating on-screen confirmation toast.
 

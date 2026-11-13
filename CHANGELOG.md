@@ -4,6 +4,20 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 
 ---
 
+## [v1.6.3] — 2026-11-14
+
+### Added & Fixed (Official Game v1.1.3 Compatibility)
+- **Full Compatibility with Official Game Update v1.1.3**:
+  - **New Features Supported**: Preserves all new official game v1.1.3 mechanics, including the Economic Growth Drivers & Sector Bottlenecks UI breakdown (8 economic sectors, labor/input/power/demand bottlenecks), political coalition separation tracking, and climate comfort error budgets.
+  - **Modular Globe Architecture Refactor**: Adapted renderer hooks to the developer's modular top-level helper architecture (`a4e`, `i4e`, `n4e`, `ke` scene instance, and `vr()` settings persistence).
+- **Official Adaptive Frame Smoothing & Complete Frame Limiter Fix**:
+  - **Root Cause**: While v1.6.2 removed the Electron `--disable-frame-rate-limit` switch, the internal `app.bundle.js` patch still had a legacy frame limiter override that returned `!0` unconditionally in Fire Mode. In v1.1.3, the game developer introduced an adaptive smoothed frame gate (`ICt` with moving average delta calculation `OI = OI * .95 + t * .05`) to prevent dropped frames when display refresh jitter is within 97% of target.
+  - **Fix & Benefit**: Removed the internal frame limiter bypass and preserved the official adaptive frame gate intact. The game now strictly obeys the player's in-game FPS cap setting (30, 60, 120, 144, or Unlimited) and properly integrates with GPU control panels (AMD Software Adrenalin, Nvidia App, RTSS) and display VSync without jumping to 1,000 FPS or causing UI stutter.
+- **Zero Simulation Conflicts**:
+  - Simulation worker tail remains 100% clean vanilla v1.1.3 engine with zero monkey-patching, ensuring zero desync or calculation stalling during month-end economic rollups.
+
+---
+
 ## [v1.6.2] — 2026-11-13
 
 ### Fixed (Frame Limiter, VSync & UI Smoothness)

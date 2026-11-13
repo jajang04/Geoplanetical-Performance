@@ -21,7 +21,7 @@ const {
 const ver = detectGameVersion();
 const BACKUP_DIR = getBackupDir();
 
-console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.2 Verification Suite (Game v${ver}) ===\n`);
+console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.3 Verification Suite (Game v${ver}) ===\n`);
 
 // Helper to read raw file & header entry from ASAR
 function readFromAsar(relPath) {
@@ -190,4 +190,4 @@ if (fs.existsSync(flagsPath)) {
   console.log('✔ [Test 5] Vanilla V8 utilityProcess heap limit preserved in simulation-runtime-flags.js (no RAM paging)');
 }
 
-console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.2 is ready.');
+console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.3 is ready.');

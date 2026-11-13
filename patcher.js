@@ -556,14 +556,8 @@ function transformAppBundleJs(src) {
     '"video/news/"'
   );
 
-  // 6.21 Bypass software frame dropper, guarantee every-day date & HUD updates, and throttle heavy map/tab rebuilds on Speed 3
-  out = replaceOnceRegex(
-    out,
-    'frame limiter bypass',
-    /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\)\{if\(([A-Za-z0-9_$]+)===0\|\|([A-Za-z0-9_$]+)===null\)return \4=\2,!0;let ([A-Za-z0-9_$]+)=Math\.floor\(\(\2-\4\+\.5\)\/\3\);return \5<1\?!1:\(\4\+=\5\*\3,!0\)\}/,
-    (_, fnGate, p1, vCap, vLast, vSteps) => `function ${fnGate}(${p1}){if(__GFM("gfx")||${vCap}===0||${vLast}===null)return ${vLast}=${p1},!0;let ${vSteps}=Math.floor((${p1}-${vLast}+.5)/${vCap});return ${vSteps}<1?!1:(${vLast}+=${vSteps}*${vCap},!0)}`,
-    '{id:"display-currency"'
-  );
+  // 6.21 Frame Limiter & VSync Safeguard: Intentionally retain native frame gate (tCt in v1.1.2 / ICt with adaptive rAF smoothing in v1.1.3)
+  // to strictly honor the player's in-game FPS Cap (30/60/120/144/Unlimited) and GPU driver limiters (Adrenalin/Nvidia App/RTSS).
 
   const hudDateIdx = out.indexOf('"hud-date"');
   const dateFmtMatch = hudDateIdx !== -1 && out.slice(hudDateIdx - 60, hudDateIdx + 220).match(/let [A-Za-z0-9_$]+=([A-Za-z0-9_$]+)\("hud-date"\),[A-Za-z0-9_$]+=([A-Za-z0-9_$]+)\(new Date\(Date\.UTC\(2026,0,1\)\+[A-Za-z0-9_$]+\.day\*864e5\)\)/);
@@ -806,7 +800,7 @@ const TARGET_FILES = [
 function install() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.6.2 — Installer (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.3 — Installer (Game v${ver}) ===`);
   console.log('Target Game Directory:', GAME_DIR);
   console.log('Version Backup Folder:', backupDir);
 
@@ -952,7 +946,7 @@ function install() {
 function uninstall() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.6.2 — Uninstaller (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.3 — Uninstaller (Game v${ver}) ===`);
   if (!fs.existsSync(backupDir)) {
     console.log(`No backup directory found for v${ver} (${backupDir}) — game is already clean.`);
     return;
