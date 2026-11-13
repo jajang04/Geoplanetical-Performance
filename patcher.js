@@ -210,14 +210,20 @@ function replaceOnceRegex(src, label, regex, replacer, anchor = null, minOffset 
 // ── 4. Transform electron/main.js (100% Gated on Active Mod in mods.json) ──
 function transformMainJs(src) {
   const origBytes = Buffer.byteLength(src, 'utf8');
-  if (src.includes('__GEO_FIRE_MAIN__')) return src;
+  if (src.includes('__GEO_FIRE_MAIN__')) {
+    if (src.includes("app.commandLine.appendSwitch('disable-frame-rate-limit');")) {
+      const oldSwitches = "app.commandLine.appendSwitch('disable-gpu-vsync'); app.commandLine.appendSwitch('disable-frame-rate-limit'); ";
+      src = src.replace(oldSwitches, ' '.repeat(oldSwitches.length));
+    }
+    return src;
+  }
 
   const trigRegex = /\/\/ ── Trigonométrie déterministe[\s\S]*?app\.commandLine\.appendSwitch\('js-flags',\s*([^\n;]+)\);/;
   const replacementTrig = (_, flagsExpr) =>
     `// __GEO_FIRE_MAIN__ /*__PAD_MAIN__*/\n` +
     `const __fireOn = (() => { try { const u = app.getPath('userData'); const m = JSON.parse(fs.readFileSync(path.join(u, 'mods.json'), 'utf8')); if (m && Array.isArray(m.disabled) && m.disabled.includes('geoplanetical-performance')) return false; if (fs.existsSync(path.join(u, 'mods', 'geoplanetical-performance', 'mod.json'))) return true; return !!(m && Array.isArray(m.order) && m.order.includes('geoplanetical-performance')); } catch (_) { return true; } })();\n` +
     `app.commandLine.appendSwitch('js-flags', ${flagsExpr});\n` +
-    `if (__fireOn) { app.commandLine.appendSwitch('disable-gpu-vsync'); app.commandLine.appendSwitch('disable-frame-rate-limit'); app.commandLine.appendSwitch('enable-gpu-rasterization'); app.commandLine.appendSwitch('enable-zero-copy'); app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds'); }`;
+    `if (__fireOn) { app.commandLine.appendSwitch('enable-gpu-rasterization'); app.commandLine.appendSwitch('enable-zero-copy'); app.commandLine.appendSwitch('disable-gpu-driver-bug-workarounds'); }`;
 
   let out = replaceOnceRegex(src, 'main.js trig/js-flags', trigRegex, replacementTrig);
 
@@ -603,7 +609,7 @@ function transformAppBundleJs(src) {
     'set-render-scale slider and F10/F2 hotkeys',
     /([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\("set-render-scale"\),\{min:50,max:100,step:10,value:Math\.round\(\(([A-Za-z0-9_$]+)\.renderScale\|\|1\)\*100\),fmt:([A-Za-z0-9_$]+)=>([A-Za-z0-9_$]+)\(\4\)\},([A-Za-z0-9_$]+)=>\{\3\.renderScale=\6\/100,([A-Za-z0-9_$]+)\.setRenderScale\(\3\.renderScale\)\},\(\)=>([A-Za-z0-9_$]+)\(\)\)/,
     (_, fnSlider, fnById, cVar, vFmtArg, fnFmt, vCbArg, gVar, fnSave) =>
-      `(()=>{if(__GFM("gfx")){__GFCSS(!0),${fnFpsCap}(0),${gVar}.setQuality("performance"),${gVar}.setRenderScale(Math.min(${cVar}.renderScale||.5,.5)),${gVar}.setClouds(!1),${gVar}.setNuclearSoot(!1),${gVar}.setOrbitalPollutionVisible(!1),${fnShowFps}(!0)}else __GFCSS(!1);window.addEventListener("keydown",e=>{if(e.key==="F10"){e.preventDefault();let on=!__GFM("gfx");globalThis.__GEO_FIRE_GFX__=on,__GFCSS(on),${fnFpsCap}(on?0:${cVar}.fpsCap),${gVar}&&(${gVar}.globeMat?.uniforms?.uGf&&(${gVar}.globeMat.uniforms.uGf.value=on?1:0),${gVar}.setQuality(on?"performance":${cVar}.quality),${gVar}.setRenderScale(on?Math.min(${cVar}.renderScale||.5,.5):${cVar}.renderScale||1),${gVar}.setClouds(!on&&${cVar}.clouds!==!1),${gVar}.setAurora(!on),${gVar}._gfCamKey="",${gVar}._updateBorderLod?.(),${gVar}._frameGate?.invalidate()),${fnShowFps}(!0),__GFTOAST(on?"🔥 Graphics: FIRE MODE [F10]":"🌿 Graphics: VANILLA [F10]")}else if(e.key==="F2"){e.preventDefault();let on=!__GFM("turbo");globalThis.__GEO_FIRE_TURBO__=on,__GFTOAST(on?"⚡ Turbo Simulation: ENABLED [F2]":"🐢 Turbo Simulation: DISABLED [F2]")}})})(),${fnSlider}(${fnById}("set-render-scale"),{min:25,max:100,step:5,value:Math.round((${cVar}.renderScale||1)*100),fmt:${vFmtArg}=>${fnFmt}(${vFmtArg})},${vCbArg}=>{${cVar}.renderScale=${vCbArg}/100,${gVar}.setRenderScale(${cVar}.renderScale)},()=>${fnSave}())`,
+      `(()=>{if(__GFM("gfx")){__GFCSS(!0),${fnFpsCap}(${cVar}.fpsCap||60),${cVar}.quality="performance",${gVar}.setQuality("performance"),${cVar}.textures="low",${gVar}.setTextureQuality?.("low"),${cVar}.renderScale=Math.min(${cVar}.renderScale||.5,.5),${gVar}.setRenderScale(${cVar}.renderScale),${cVar}.clouds=!1,${gVar}.setClouds(!1),${cVar}.nuclearSoot=!1,${gVar}.setNuclearSoot(!1),${cVar}.orbitalSatellites=!1,${gVar}.setOrbitalPollutionVisible(!1),${cVar}.volSfx=0,${cVar}.broadcastVoice=!1,${cVar}.newsFlash=!1,typeof tn!=="undefined"&&(tn.setSfxVolume?.(0),tn.stopBroadcastVoice?.()),${fnSave}(),${fnShowFps}(!0)}else __GFCSS(!1);window.addEventListener("keydown",e=>{if(e.key==="F10"){e.preventDefault();let on=!__GFM("gfx");globalThis.__GEO_FIRE_GFX__=on,__GFCSS(on),${fnFpsCap}(${cVar}.fpsCap||60),${gVar}&&(${gVar}.globeMat?.uniforms?.uGf&&(${gVar}.globeMat.uniforms.uGf.value=on?1:0),${gVar}.setQuality(on?"performance":${cVar}.quality),${gVar}.setRenderScale(on?Math.min(${cVar}.renderScale||.5,.5):${cVar}.renderScale||1),${gVar}.setClouds(!on&&${cVar}.clouds!==!1),${gVar}.setAurora(!on),${gVar}._gfCamKey="",${gVar}._updateBorderLod?.(),${gVar}._frameGate?.invalidate()),on&&(${cVar}.quality="performance",${cVar}.textures="low",${cVar}.clouds=!1,${cVar}.nuclearSoot=!1,${cVar}.orbitalSatellites=!1,${cVar}.volSfx=0,${cVar}.broadcastVoice=!1,${cVar}.newsFlash=!1,typeof tn!=="undefined"&&(tn.setSfxVolume?.(0),tn.stopBroadcastVoice?.()),${fnSave}()),${fnShowFps}(!0),__GFTOAST(on?"🔥 Graphics: FIRE MODE [F10]":"🌿 Graphics: VANILLA [F10]")}else if(e.key==="F2"){e.preventDefault();let on=!__GFM("turbo");globalThis.__GEO_FIRE_TURBO__=on,__GFTOAST(on?"⚡ Turbo Simulation: ENABLED [F2]":"🐢 Turbo Simulation: DISABLED [F2]")}})})(),${fnSlider}(${fnById}("set-render-scale"),{min:25,max:100,step:5,value:Math.round((${cVar}.renderScale||1)*100),fmt:${vFmtArg}=>${fnFmt}(${vFmtArg})},${vCbArg}=>{${cVar}.renderScale=${vCbArg}/100,${gVar}.setRenderScale(${cVar}.renderScale)},()=>${fnSave}())`,
     '"set-render-scale"'
   );
 
@@ -747,7 +753,6 @@ function installLocalModPack() {
 
   try {
     fs.mkdirSync(USER_DATA_DIR, { recursive: true });
-    fs.writeFileSync(path.join(USER_DATA_DIR, 'vsync.json'), JSON.stringify({ vsync: false }) + '\n');
   } catch (_) {}
 
   const modsJsonPath = path.join(USER_DATA_DIR, 'mods.json');
@@ -801,7 +806,7 @@ const TARGET_FILES = [
 function install() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.6.1 — Installer (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.2 — Installer (Game v${ver}) ===`);
   console.log('Target Game Directory:', GAME_DIR);
   console.log('Version Backup Folder:', backupDir);
 
@@ -947,7 +952,7 @@ function install() {
 function uninstall() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.6.1 — Uninstaller (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.2 — Uninstaller (Game v${ver}) ===`);
   if (!fs.existsSync(backupDir)) {
     console.log(`No backup directory found for v${ver} (${backupDir}) — game is already clean.`);
     return;

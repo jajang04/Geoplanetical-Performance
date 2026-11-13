@@ -21,7 +21,7 @@ const {
 const ver = detectGameVersion();
 const BACKUP_DIR = getBackupDir();
 
-console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.1 Verification Suite (Game v${ver}) ===\n`);
+console.log(`=== Running Geoplanetical Fire Performance Mod v1.6.2 Verification Suite (Game v${ver}) ===\n`);
 
 // Helper to read raw file & header entry from ASAR
 function readFromAsar(relPath) {
@@ -57,7 +57,8 @@ const mainOrig = fs.readFileSync(path.join(BACKUP_DIR, 'electron__main.js'), 'ut
 const mainPatched = transformMainJs(mainOrig);
 assert.strictEqual(Buffer.byteLength(mainPatched, 'utf8'), Buffer.byteLength(mainOrig, 'utf8'), 'main.js byte length exact');
 assert(mainPatched.includes('__GEO_FIRE_MAIN__'), 'main.js contains Fire Mod hook');
-assert(mainPatched.includes("app.commandLine.appendSwitch('disable-gpu-vsync')"), 'main.js sets GPU performance flags');
+assert(mainPatched.includes("app.commandLine.appendSwitch('enable-gpu-rasterization')"), 'main.js sets GPU performance flags');
+assert(!mainPatched.includes("app.commandLine.appendSwitch('disable-frame-rate-limit')"), 'main.js respects frame rate limiters and vsync');
 
 const wkOrig = fs.readFileSync(path.join(BACKUP_DIR, 'electron__mods__mod-workshop.js'), 'utf8');
 const wkPatched = transformWorkshopJs(wkOrig);
@@ -189,4 +190,4 @@ if (fs.existsSync(flagsPath)) {
   console.log('✔ [Test 5] Vanilla V8 utilityProcess heap limit preserved in simulation-runtime-flags.js (no RAM paging)');
 }
 
-console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.1 is ready.');
+console.log('\nALL TESTS PASSED! Geoplanetical Fire Performance Mod v1.6.2 is ready.');

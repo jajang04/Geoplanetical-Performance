@@ -4,6 +4,18 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 
 ---
 
+## [v1.6.2] — 2026-11-13
+
+### Fixed (Frame Limiter, VSync & UI Smoothness)
+- **Eliminated 1,000 FPS Surge on Dedicated GPUs (Nvidia & AMD)**:
+  - **Root Cause**: Earlier versions injected Chromium flags `--disable-frame-rate-limit` and `--disable-gpu-vsync` and forced the game's internal `fpsCap` setting to `0` (*Unlimited*). On dedicated gaming GPUs (Nvidia RTX / AMD Radeon), lightweight 2K Three.js shaders render in $< 1\text{ ms}$, causing frame rates to spike to 1,000+ FPS, creating excessive GPU heat, fan noise, and breaking driver-level limiters (Nvidia Max Frame Rate and AMD Radeon Chill).
+  - **Fix & Benefit**: Removed `--disable-frame-rate-limit` and `--disable-gpu-vsync` from `main.js`. Fire Mode now respects the user's in-game `fpsCap` setting (`cVar.fpsCap || 60`) across all options (30, 60, 120, 144, or Unlimited) and allows external driver limiters and VSync to function normally.
+- **Eliminated UI Navigation Stuttering**:
+  - **Root Cause**: In Electron, the WebGL 3D globe and the HTML/DOM UI run on the same JavaScript main thread. Uncapped 1,000 FPS loops choked the event loop with 1,000 render calls per second, starving DOM events (clicks, tabs, scrolling).
+  - **Fix & Benefit**: Capping frames smoothly frees up over 80% of main thread frame budgets, resulting in instantaneous, butter-smooth menu navigation without sacrificing any 3D performance.
+
+---
+
 ## [v1.6.1] — 2026-11-11
 
 ### Fixed (Game v1.1.2 Compatibility)

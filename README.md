@@ -1,7 +1,7 @@
 # Geoplanetical Fire Performance Mod 🔥
 
 [![Game Version](https://img.shields.io/badge/Game-v1.1.2-blue.svg)](https://store.steampowered.com/app/940230/Geoplanetical/)
-[![Mod Version](https://img.shields.io/badge/Mod-v1.6.1-orange.svg)](https://github.com/jajang04/Geoplanetical-Performance/releases)
+[![Mod Version](https://img.shields.io/badge/Mod-v1.6.2-orange.svg)](https://github.com/jajang04/Geoplanetical-Performance/releases)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tested On](https://img.shields.io/badge/Tested%20On-8GB%20RAM%20%2F%20Iris%20Xe-success.svg)](#hardware-targets)
 

@@ -3,7 +3,7 @@ setlocal
 cd /d "%~dp0"
 set "GEO_MOD_DIR=%~dp0"
 echo ============================================================================
-echo   Installing Geoplanetical Fire Performance Mod v1.6.1...
+echo   Installing Geoplanetical Fire Performance Mod v1.6.2...
 echo ============================================================================
 
 taskkill /F /IM Geoplanetical.exe >nul 2>nul
