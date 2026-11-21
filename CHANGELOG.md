@@ -4,6 +4,20 @@ All notable changes, fixes, and architecture improvements to **Geoplanetical Fir
 
 ---
 
+## [v1.6.4] — 2026-11-21
+
+### Added & Fixed (Official Game v1.1.5 & v1.1.6 Compatibility)
+- **Full Compatibility with Official Game Updates v1.1.5 & v1.1.6**:
+  - **Mars Scene & Celestial Frame Support**: Accommodates new celestial passes (`_initMars?.()` in `_initScene` and `_drawMarsFrame?.()` in `_drawFrame`) while keeping Fire Mode clean and skipping heavy orbital pollution/ISS passes. Ensures `_celestial` and `skyGroup` nodes are fully instantiated before Mars ephemeris points are mounted, preventing `TypeError: Cannot read properties of undefined (reading 'add')` on the loading screen.
+  - **Energy Siting Markers Projection**: Supported the newly added `_updateEnergySiting?.()` marker pass within the throttled DOM projection loop, avoiding camera stutter while keeping map markers in sync.
+  - **Render Order Token Architecture**: Adapted nation label frustum culling hook to dynamically bind to the new tokenized render order constants (`Ft.labels`) introduced in v1.1.6, maintaining 100% backwards compatibility with earlier versions.
+  - **Minification & Syntax Chaining Resiliency**: Updated newsflash video selector transform to handle variable declaration comma chaining (`let t=e,a=...`) seamlessly.
+- **Zero Simulation Conflicts & Byte-for-Byte ASAR Integrity**:
+  - Retained untouched vanilla v1.1.6 simulation engine with zero monkey-patching, ensuring full stability with the latest economic updates, sector bottlenecks, and trade calculations.
+  - Validated exact byte parity across all patched bundles with zero byte-drift.
+
+---
+
 ## [v1.6.3] — 2026-11-14
 
 ### Added & Fixed (Official Game v1.1.3 Compatibility)

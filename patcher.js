@@ -425,13 +425,13 @@ function transformAppBundleJs(src) {
     ',256,160),this.globeMat)'
   );
 
-  // 6.11 Skip _initSky() and hide atmosphere/cloud/aurora meshes in Fire Mode
+  // 6.11 Call _initSky() (instantiates _celestial & skyGroup) and hide atmosphere/cloud/aurora meshes in Fire Mode
   out = replaceOnceRegex(
     out,
     '_initScene end',
-    /this\._initMoon\(\),this\._initApollo\(\),this\._initVolcano\(\),this\._resetHurricanes\(\),this\._initSky\(\),this\._updateSun\(0\)/,
-    `this._initMoon(),this._initApollo(),this._initVolcano(),this._resetHurricanes(),__GFM("gfx")?(this.cloudMesh&&(this.cloudMesh.visible=!1),this.auroraMesh&&(this.auroraMesh.visible=!1),this.atmosphereMesh&&(this.atmosphereMesh.visible=!1),this.atmosphereExtinctionMesh&&(this.atmosphereExtinctionMesh.visible=!1)):this._initSky(),this._updateSun(0)`,
-    'this._initSky(),this._updateSun(0)'
+    /this\._initMoon\(\),this\._initApollo\(\),this\._initVolcano\(\),this\._resetHurricanes\(\),this\._initSky\(\)(?:,this\._initMars\?\.\(\))?,this\._updateSun\(0\)/,
+    m => `this._initMoon(),this._initApollo(),this._initVolcano(),this._resetHurricanes(),this._initSky(),__GFM("gfx")&&(this.cloudMesh&&(this.cloudMesh.visible=!1),this.auroraMesh&&(this.auroraMesh.visible=!1),this.atmosphereMesh&&(this.atmosphereMesh.visible=!1),this.atmosphereExtinctionMesh&&(this.atmosphereExtinctionMesh.visible=!1),this.skyGroup&&(this.skyGroup.visible=!1)),${m.includes('this._initMars?.()') ? 'this._initMars?.(),' : ''}this._updateSun(0)`,
+    'this._initSky(),'
   );
 
   // 6.12 Skip moonNormal in _loadMoonTexture() when Fire Mode is active
@@ -463,12 +463,12 @@ function transformAppBundleJs(src) {
   out = replaceOnceRegex(
     out,
     'DOM markers projection in update()',
-    /this\._updateOceanLabels\?\.\(\),this\._updateNationLabels\(([A-Za-z0-9_$]+)\),this\._updateCapitalLabels\(\1\),this\._updateBaseMarkers\(\),this\._updateFormationMarkers\(\),this\._updateFrontLabels\(\),this\._updateWarMapMarks\(\),this\._updatePlantMarkers\(\),this\._updateTransportMarkers\(\),this\._updateTransportFlow\(\),this\._updateConstructionMarkers\(\),this\._updateFieldMarkers\(\),this\.updateWarTargets\?\.\(\),this\._updateWarCandidates\?\.\(\),this\._updateDeterrence\?\.\(\),this\._updateAirDamagePopups\?\.\(\),this\._updateSpaceSites\?\.\(([A-Za-z0-9_$]+)\)/,
-    (_, vZoom, vDt) =>
+    /this\._updateOceanLabels\?\.\(\),this\._updateNationLabels\(([A-Za-z0-9_$]+)\),this\._updateCapitalLabels\(\1\),this\._updateBaseMarkers\(\),this\._updateFormationMarkers\(\),this\._updateFrontLabels\(\),this\._updateWarMapMarks\(\),this\._updatePlantMarkers\(\)(?:,this\._updateEnergySiting\?\.\(\))?,this\._updateTransportMarkers\(\),this\._updateTransportFlow\(\),this\._updateConstructionMarkers\(\),this\._updateFieldMarkers\(\),this\.updateWarTargets\?\.\(\),this\._updateWarCandidates\?\.\(\),this\._updateDeterrence\?\.\(\),this\._updateAirDamagePopups\?\.\(\),this\._updateSpaceSites\?\.\(([A-Za-z0-9_$]+)\)/,
+    (m, vZoom, vDt) =>
       `((()=>{if(!__GFM("gfx"))return!0;let E=this.camera.matrixWorld.elements,k=` +
       `E[0].toFixed(4)+"|"+E[5].toFixed(4)+"|"+E[10].toFixed(4)+"|"+E[12].toFixed(3)+"|"+E[13].toFixed(3)+"|"+E[14].toFixed(3)+"|"+${vZoom}.toFixed(3)+"|"+(this.activeBody||"earth")+"|"+(this._energyMode?1:0)+(this._militaryMode?1:0)+(this._basesMode?1:0)+(this._forageMode?1:0)+(this._transportMode?1:0),` +
       `T=performance.now();return k!==this._gfCamKey&&T-(this._gfDomAt||0)>=36?(this._gfCamKey=k,this._gfDomAt=T,!0):T-(this._gfDomAt||0)>=300?(this._gfCamKey=k,this._gfDomAt=T,!0):!1})())&&(` +
-      `this._updateOceanLabels?.(),this._updateNationLabels(${vZoom}),this._updateCapitalLabels(${vZoom}),this._updateBaseMarkers(),this._updateFormationMarkers(),this._updateFrontLabels(),this._updateWarMapMarks(),this._updatePlantMarkers(),this._updateTransportMarkers(),this._updateTransportFlow(),this._updateConstructionMarkers(),this._updateFieldMarkers(),this.updateWarTargets?.(),this._updateWarCandidates?.(),this._updateDeterrence?.(),this._updateAirDamagePopups?.(),this._updateSpaceSites?.(${vDt}))`,
+      `this._updateOceanLabels?.(),this._updateNationLabels(${vZoom}),this._updateCapitalLabels(${vZoom}),this._updateBaseMarkers(),this._updateFormationMarkers(),this._updateFrontLabels(),this._updateWarMapMarks(),this._updatePlantMarkers(),${m.includes('this._updateEnergySiting?.()') ? 'this._updateEnergySiting?.(),' : ''}this._updateTransportMarkers(),this._updateTransportFlow(),this._updateConstructionMarkers(),this._updateFieldMarkers(),this.updateWarTargets?.(),this._updateWarCandidates?.(),this._updateDeterrence?.(),this._updateAirDamagePopups?.(),this._updateSpaceSites?.(${vDt}))`,
     'this._updateOceanLabels?.()'
   );
 
@@ -476,9 +476,9 @@ function transformAppBundleJs(src) {
   out = replaceOnceRegex(
     out,
     '_drawFrame passes',
-    /_drawFrame\(\)\{this\.renderer\.render\(this\.scene,this\.camera\),this\._renderBorderOverlay\?\.\(\),this\._renderISS\(\),this\._renderOrbitalPollution\(\)\}/,
-    `_drawFrame(){this.renderer.render(this.scene,this.camera),this._renderBorderOverlay?.(),__GFM("gfx")||(this._renderISS(),this._renderOrbitalPollution())}`,
-    '_drawFrame(){this.renderer.render('
+    /_drawFrame\(\)\{(this\._drawMarsFrame\?\.\(\)\|\|\()?this\.renderer\.render\(this\.scene,this\.camera\),this\._renderBorderOverlay\?\.\(\),this\._renderISS\(\),this\._renderOrbitalPollution\(\)(\))?\}/,
+    m => `_drawFrame(){${m.includes('this._drawMarsFrame?.()||(') ? 'this._drawMarsFrame?.()||(' : ''}this.renderer.render(this.scene,this.camera),this._renderBorderOverlay?.(),__GFM("gfx")||(this._renderISS(),this._renderOrbitalPollution())${m.includes('this._drawMarsFrame?.()||(') ? ')' : ''}}`,
+    '_drawFrame(){'
   );
 
   // 6.16 Retain native spherical province tessellation (prevents flat chord sagging/black patches), add fillMat early discard, & auto-settle static globe
@@ -551,8 +551,8 @@ function transformAppBundleJs(src) {
   out = replaceOnceRegex(
     out,
     'newsflash video selector',
-    /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\)\{let ([A-Za-z0-9_$]+)=\2,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)&&\5\[\2\]\|\|\[\];/,
-    (_, fnVid, p1, vTheme, vArr, tbl) => `function ${fnVid}(${p1}){if(__GFM("gfx"))return null;let ${vTheme}=${p1},${vArr}=${tbl}&&${tbl}[${p1}]||[];`,
+    /function ([A-Za-z0-9_$]+)\(([A-Za-z0-9_$]+)\)\{let ([A-Za-z0-9_$]+)=\2,([A-Za-z0-9_$]+)=([A-Za-z0-9_$]+)&&\5\[\2\]\|\|\[\]([;,])/,
+    (_, fnVid, p1, vTheme, vArr, tbl, delim) => `function ${fnVid}(${p1}){if(__GFM("gfx"))return null;let ${vTheme}=${p1},${vArr}=${tbl}&&${tbl}[${p1}]||[]${delim}`,
     '"video/news/"'
   );
 
@@ -673,8 +673,12 @@ function transformAppBundleJs(src) {
   out = replaceOnceRegex(
     out,
     'enable frustum culling on nation label meshes in Fire Mode',
-    /([A-Za-z0-9_$]+)\.renderOrder=6,\1\.frustumCulled=!1,this\._nlGroup\.add\(\1\)/,
-    (_, vP) => `${vP}.renderOrder=6,${vP}.frustumCulled=__GFM("gfx"),this._nlGroup.add(${vP})`,
+    /([A-Za-z0-9_$]+)\.renderOrder=(?:6|[A-Za-z0-9_$]+(?:\.[A-Za-z0-9_$]+)?),\1\.frustumCulled=!1,this\._nlGroup\.add\(\1\)/,
+    (m, vP) => {
+      const orderMatch = m.match(/\.renderOrder=([^,]+),/);
+      const order = orderMatch ? orderMatch[1] : '6';
+      return `${vP}.renderOrder=${order},${vP}.frustumCulled=__GFM("gfx"),this._nlGroup.add(${vP})`;
+    },
     'this._nlGroup.add('
   );
 
@@ -800,7 +804,7 @@ const TARGET_FILES = [
 function install() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.6.3 — Installer (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.4 — Installer (Game v${ver}) ===`);
   console.log('Target Game Directory:', GAME_DIR);
   console.log('Version Backup Folder:', backupDir);
 
@@ -946,7 +950,7 @@ function install() {
 function uninstall() {
   const ver = detectGameVersion();
   const backupDir = getBackupDir();
-  console.log(`=== Geoplanetical Fire Performance Mod v1.6.3 — Uninstaller (Game v${ver}) ===`);
+  console.log(`=== Geoplanetical Fire Performance Mod v1.6.4 — Uninstaller (Game v${ver}) ===`);
   if (!fs.existsSync(backupDir)) {
     console.log(`No backup directory found for v${ver} (${backupDir}) — game is already clean.`);
     return;
